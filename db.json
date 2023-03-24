@@ -7,10 +7,10 @@
       "cateCode": "int",
       "used": "boolean",
       "exchange": "boolean",
-      "price": "int",
+      "price": "9000",
       "desc": "string",
       "quantity": "int",
-      "thunderPay": "ture"
+      "thunderPay": false
     },
     {
       "id": 2,
@@ -22,19 +22,7 @@
       "price": "int",
       "desc": "string",
       "quantity": "int",
-      "thunderPay": "ture"
-    },
-    {
-      "id": 3,
-      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
-      "title": "제목",
-      "cateCode": "int",
-      "used": "boolean",
-      "exchange": "boolean",
-      "price": "int",
-      "desc": "string",
-      "quantity": "int",
-      "thunderPay": "ture"
+      "thunderPay": true
     },
     {
       "id": 4,
@@ -43,10 +31,10 @@
       "cateCode": "int",
       "used": "boolean",
       "exchange": "boolean",
-      "price": "int",
+      "price": "9000",
       "desc": "string",
       "quantity": "int",
-      "thunderPay": "ture"
+      "thunderPay": false
     },
     {
       "id": 5,
@@ -58,7 +46,7 @@
       "price": "int",
       "desc": "string",
       "quantity": "int",
-      "thunderPay": "ture"
+      "thunderPay": true
     },
     {
       "id": 6,
@@ -67,10 +55,92 @@
       "cateCode": "int",
       "used": "boolean",
       "exchange": "boolean",
+      "price": "9000",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": false
+    },
+    {
+      "id": 7,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
       "price": "int",
       "desc": "string",
       "quantity": "int",
-      "thunderPay": "ture"
+      "thunderPay": true
+    }
+  ],
+  "signup": [
+    {
+      "username": "",
+      "password": "",
+      "nick": "",
+      "email": "",
+      "id": 1
+    },
+    {
+      "username": "",
+      "password": "",
+      "nick": "",
+      "email": "",
+      "nickname": "졔졔",
+      "id": 2
+    },
+    {
+      "username": "",
+      "password": "",
+      "nick": "",
+      "email": "",
+      "id": 3
+    },
+    {
+      "username": "",
+      "password": "",
+      "nick": "",
+      "email": "",
+      "nickname": "졔졔",
+      "id": 4
+    },
+    {
+      "username": "",
+      "password": "",
+      "nick": "졔졔",
+      "email": "",
+      "id": 5
+    },
+    {
+      "username": "dfd",
+      "password": "",
+      "nick": "",
+      "email": "",
+      "id": 6
+    },
+    {
+      "username": "test",
+      "password": "qwer123",
+      "nick": "졔졔",
+      "email": "1",
+      "id": 7
+    },
+    {
+      "username": "test1",
+      "password": "test1234!",
+      "nick": "test",
+      "email": "1",
+      "id": 8
+    }
+  ],
+  "login": [
+    {
+      "username": "ori",
+      "nick": " 오리",
+      "email": "1q@q.q",
+      "password": " ori",
+      "admin": " false",
+      "admintoken": " "
     }
   ]
 }
