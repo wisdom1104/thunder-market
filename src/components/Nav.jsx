@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import LoginModal from "./LoginModal";
 
 function Nav() {
+  let [isLogin, setIsLogin] = useState(false);
+
   return (
     <StNavWrapper>
       <StNavTitle>
@@ -27,7 +30,13 @@ function Nav() {
         </StNavBox>
         <StNavBox></StNavBox>
         <StNavBox>
-          <StNavMemberButton>로그인/로그아웃</StNavMemberButton>
+          <StNavMemberButton
+            onClick={() => {
+              setIsLogin(!isLogin);
+            }}
+          >
+            로그인
+          </StNavMemberButton>
           <StNavContentBox>
             <StNavDropdownTitleBox>
               <StNavDropdowTitle>알림</StNavDropdowTitle>
@@ -40,6 +49,7 @@ function Nav() {
           </StNavContentBox>
         </StNavBox>
       </StNavTitle>
+      <LoginModal isLogin={isLogin} setIsLogin={setIsLogin} />
     </StNavWrapper>
   );
 }
@@ -107,7 +117,7 @@ const StNavButton = styled.button`
   background-color: white;
 `;
 
-const StNavMemberButton = styled.div`
+const StNavMemberButton = styled.button`
   display: flex;
   align-items: center;
   font-size: 13px;
@@ -115,6 +125,9 @@ const StNavMemberButton = styled.div`
   padding: 0px 15px;
   position: relative;
   line-height: 1.4;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 `;
 
 const StNavDropdownTitleBox = styled.div`
