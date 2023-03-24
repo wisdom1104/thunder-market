@@ -1,0 +1,76 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    },
+    {
+      "id": 2,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    },
+    {
+      "id": 3,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    },
+    {
+      "id": 4,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    },
+    {
+      "id": 5,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    },
+    {
+      "id": 6,
+      "img": "http://www.chemicalnews.co.kr/news/photo/202106/3636_10174_4958.jpg",
+      "title": "제목",
+      "cateCode": "int",
+      "used": "boolean",
+      "exchange": "boolean",
+      "price": "int",
+      "desc": "string",
+      "quantity": "int",
+      "thunderPay": "ture"
+    }
+  ]
+}
