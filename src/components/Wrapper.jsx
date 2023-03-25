@@ -10,8 +10,7 @@ const StWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 1200px;
-  min-width: 800px;
+  min-width: 1236px;
   margin: auto;
 `;
 
