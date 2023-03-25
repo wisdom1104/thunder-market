@@ -1,11 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 
-function FloaingFooter() {
+function FloaingFooter({ submitInputHandler }) {
   return (
     <StFooter>
       <StFooterBox>
-        <StButton />
+        <StButton
+          type="submit"
+          form="post-product"
+          onClick={submitInputHandler}
+        />
       </StFooterBox>
     </StFooter>
   );
@@ -16,7 +20,7 @@ const StFooter = styled.footer`
   height: 5.5rem;
   background: rgb(250, 250, 253);
   box-shadow: rgb(234 233 241) 0px -1px 0px 0px;
-  position: absolute;
+  position: sticky;
   left: 0px;
   bottom: 0px;
 `;
@@ -30,7 +34,7 @@ const StFooterBox = styled.div`
   margin: auto;
 `;
 
-const StButton = styled.div`
+const StButton = styled.button`
   height: 3.5rem;
   width: 10rem;
   color: rgb(255, 255, 255);
@@ -39,6 +43,8 @@ const StButton = styled.div`
   border-radius: 2px;
   background: rgb(255, 80, 88);
   position: relative;
+  border: 1px solid transparent;
+  cursor: pointer;
 
   ::before {
     content: "등록하기";
@@ -51,6 +57,8 @@ const StButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid transparent;
+    cursor: pointer;
   }
 `;
 

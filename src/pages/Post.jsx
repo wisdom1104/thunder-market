@@ -6,14 +6,13 @@ import styled from "styled-components";
 import { Column } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
+import { __postDetail } from "../redux/modules/detailSlice";
 
 function Post() {
-  const [checkList, setCheckList] = useState([]);
-
   const newItem = {
     img: null,
     title: "",
-    cateCode: "",
+    cateCode: "100",
     used: false,
     exchange: false,
     price: "",
@@ -24,41 +23,79 @@ function Post() {
     thunderPay: false,
   };
 
-  const [
-    inputValue,
-    onChangeHandler,
-    onCheckHandler,
-    fileInputHandler,
-    submitInputHandler,
-  ] = useInput(
-    newItem,
-    // __addItem,
-    null
-  );
+  const [inputValue, onChangeHandler, fileInputHandler, submitInputHandler] =
+    useInput(newItem, __postDetail);
 
-  const checkAll = (e) => {
-    e.target.checked
-      ? setCheckList(["firstTerm", "secondTerm", "thirdTerm"])
-      : setCheckList([]);
+  // 카테고리코드 => 한글 변환 switch 문
+  const category = (cate) => {
+    switch (cate) {
+      case 100:
+        return "여성의류";
+      case 200:
+        return "남성의류";
+      case 300:
+        return "신발";
+      case 400:
+        return "가방";
+      case 500:
+        return "시계/주얼리";
+      case 600:
+        return "패션액세서리";
+      case 700:
+        return "디지털/가전";
+      case 800:
+        return "스포츠/레저";
+      default:
+        return null;
+    }
   };
+
+  // const changeRadioHandler = (e)=>{
+  //   const isUsed = e.currentTarget.value =='true'?true:false
+  // }
+
+  const [checkList, setCheckList] = useState([]);
+  const checkAll = (e) => {
+    if (e.target.checked) {
+      return setCheckList(["firstTerm", "secondTerm", "thirdTerm"]);
+      onChangeHandler();
+    } else {
+      return setCheckList([]);
+    }
+  };
+
+  // 정규표현식 - 상품명 2글자 이상
+  const checkValidTitle = (item) => {
+    // 2자이상 40자 이하 한글, 특수문자, 공백포함
+    const regEx = /^[^?a-zA-Z0-9/]{2,40}$/;
+    return regEx.test(item);
+  };
+
+  console.log("상태", inputValue.used);
+
+  console.log("교환", inputValue.exchange);
+  console.log("번개페이", inputValue.thunderPay);
+  console.log("배송비포함", inputValue.deliveryFee);
 
   return (
     <Wrapper>
       <Layout>
         <div>카테고리</div>
         <div>기본정보</div>
-        <PostList onSubmit={submitInputHandler}>
+        <PostList id="post-product" onSubmit={submitInputHandler}>
           <InputList name="상품이미지" important>
-            <StPhotoInputBox>
-              이미지 등록
-              <StPhotoInput
-                type="file"
-                name="img"
-                accept="image/jpg, image/jpeg, image/png"
-                onChange={fileInputHandler}
-                multiple=""
-              />
-            </StPhotoInputBox>
+            <StPhotoInputWrapper>
+              <StPhotoInputBox>
+                이미지 등록
+                <StPhotoInput
+                  type="file"
+                  name="img"
+                  accept="image/jpg, image/jpeg, image/png"
+                  onChange={fileInputHandler}
+                  multiple=""
+                />
+              </StPhotoInputBox>
+            </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
               <br />
@@ -84,29 +121,39 @@ function Post() {
               value={inputValue.title}
               placeholder="상품 제목을 입력해주세요."
               onChange={onChangeHandler}
+              required
             />
-            <span>상품명을 2자 이상 입력해주세요.</span>
+            {checkValidTitle(inputValue.title) ? null : (
+              <span style={{ color: "red" }}>
+                상품명을 2자 이상 입력해주세요.
+              </span>
+            )}
+
             <span>0/40</span>
           </InputList>
           <InputList name="카테고리" important>
-            <select
-              name="cateCode"
-              value={inputValue.cateCode}
-              id=""
-              onChange={onChangeHandler}
-            >
-              <option value="100">여성의류</option>
-              <option value="200">남성의류</option>
-              <option value="300">신발</option>
-              <option value="400">가방</option>
-              <option value="500">시계/주얼리</option>
-              <option value="600">패션액세서리</option>
-              <option value="700">디지털/가전</option>
-              <option value="800">스포츠/레저</option>
-            </select>
-            <span>선택한 카테고리 :</span>
+            <Column>
+              {" "}
+              <select
+                name="cateCode"
+                value={inputValue.cateCode}
+                id=""
+                onChange={onChangeHandler}
+                required
+              >
+                <option value="100">여성의류</option>
+                <option value="200">남성의류</option>
+                <option value="300">신발</option>
+                <option value="400">가방</option>
+                <option value="500">시계/주얼리</option>
+                <option value="600">패션액세서리</option>
+                <option value="700">디지털/가전</option>
+                <option value="800">스포츠/레저</option>
+              </select>
+              <p>선택한 카테고리 :{category(Number(inputValue.cateCode))}</p>
+            </Column>
           </InputList>
-          <InputList name="상태" value={inputValue.used} important>
+          <InputList name="상태" required important>
             <label>
               <input
                 type="radio"
@@ -121,14 +168,14 @@ function Post() {
               <input
                 type="radio"
                 name="used"
-                value="false"
                 id=""
+                value="false"
                 onChange={onChangeHandler}
               />
               새상품
             </label>
           </InputList>
-          <InputList name="교환" value={inputValue.exchange} important>
+          <InputList name="교환" required value={inputValue.exchange} important>
             <label>
               <input
                 type="radio"
@@ -136,6 +183,7 @@ function Post() {
                 value="false"
                 id=""
                 onChange={onChangeHandler}
+                // checked={}
               />
               교환불가
             </label>
@@ -167,8 +215,8 @@ function Post() {
               <input
                 type="checkbox"
                 name="deliveryFee"
-                value={inputValue.deliveryFee}
-                onChange={onCheckHandler}
+                // value={inputValue.deliveryFee}
+                onChange={onChangeHandler}
                 id=""
               />
               배송비포함
@@ -206,9 +254,13 @@ function Post() {
               <label htmlFor="">
                 <input
                   type="checkbox"
-                  name="all"
+                  name="thunderPay"
                   id=""
-                  onChange={checkAll}
+                  value={inputValue.thunderPay}
+                  onChange={(e) => {
+                    checkAll(e);
+                    onChangeHandler(e);
+                  }}
                   checked={checkList.length === 3 ? true : false}
                 />
                 안전결제 환영
@@ -229,7 +281,7 @@ function Post() {
                   type="checkbox"
                   name="secondTerm"
                   id=""
-                  checked={checkList.includes("firstTerm") ? true : false}
+                  checked={checkList.includes("secondTerm") ? true : false}
                   readOnly
                 />
                 내 상품을 먼저 보여주는 전용 필터로 더 빠르게 판매할 수 있어요.
@@ -239,16 +291,15 @@ function Post() {
                   type="checkbox"
                   name="thirdTerm"
                   id=""
-                  checked={checkList.includes("firstTerm") ? true : false}
+                  checked={checkList.includes("thirdTerm") ? true : false}
                   readOnly
                 />
                 번개페이 배지로 더 많은 관심을 받을 수 있어요.
               </label>
             </Column>
           </InputList>
-          <input type="submit" value="등록하기" />
-          {/* <FloaingFooter /> */}
         </PostList>
+        <FloaingFooter />
       </Layout>
     </Wrapper>
   );
@@ -260,7 +311,14 @@ const PostList = styled.form`
   margin: auto;
 `;
 
-const StPhotoInputBox = styled.div`
+const StPhotoInputWrapper = styled.ul`
+  display: flex;
+  width: 856px;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+`;
+
+const StPhotoInputBox = styled.li`
   width: 202px;
   height: 202px;
   position: relative;
