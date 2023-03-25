@@ -12,7 +12,7 @@ function Post() {
   const newItem = {
     img: null,
     title: "",
-    cateCode: "100",
+    cateCode: "1",
     used: false,
     exchange: false,
     price: "",
@@ -29,21 +29,21 @@ function Post() {
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {
     switch (cate) {
-      case 100:
+      case 1:
         return "여성의류";
-      case 200:
+      case 2:
         return "남성의류";
-      case 300:
+      case 3:
         return "신발";
-      case 400:
+      case 4:
         return "가방";
-      case 500:
+      case 5:
         return "시계/주얼리";
-      case 600:
+      case 6:
         return "패션액세서리";
-      case 700:
+      case 7:
         return "디지털/가전";
-      case 800:
+      case 8:
         return "스포츠/레저";
       default:
         return null;
@@ -141,14 +141,14 @@ function Post() {
                 onChange={onChangeHandler}
                 required
               >
-                <option value="100">여성의류</option>
-                <option value="200">남성의류</option>
-                <option value="300">신발</option>
-                <option value="400">가방</option>
-                <option value="500">시계/주얼리</option>
-                <option value="600">패션액세서리</option>
-                <option value="700">디지털/가전</option>
-                <option value="800">스포츠/레저</option>
+                <option value="1">여성의류</option>
+                <option value="2">남성의류</option>
+                <option value="3">신발</option>
+                <option value="4">가방</option>
+                <option value="5">시계/주얼리</option>
+                <option value="6">패션액세서리</option>
+                <option value="7">디지털/가전</option>
+                <option value="8">스포츠/레저</option>
               </select>
               <p>선택한 카테고리 :{category(Number(inputValue.cateCode))}</p>
             </Column>
