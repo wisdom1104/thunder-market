@@ -14,9 +14,8 @@ export const __getCards = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/cards`
+        `${process.env.REACT_APP_SERVER_URL}/products`
       );
-      // console.log(response.data);
       return thunkAPI.fulfillWithValue(response.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);

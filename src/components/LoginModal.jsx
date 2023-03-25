@@ -5,12 +5,12 @@ import styled from "styled-components";
 import { isLoginActions, __logIn } from "../redux/modules/loginSlice";
 import { Column } from "./Flex";
 
-function LoginModal({ isLogin, setIsLogin }) {
+function LoginModal({ isLoginModal, setIsLoginModal }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -20,17 +20,17 @@ function LoginModal({ isLogin, setIsLogin }) {
     if (response.type === "logIn/fulfilled") {
       dispatch(isLoginActions.login());
       alert("로그인 되었습니다.");
-      navigate("/");
+      setIsLoginModal(!isLoginModal);
     }
   };
 
   return (
     <>
       {
-        isLogin === true ? (
+        isLoginModal === true ? (
           <ModalBackground
             onClick={() => {
-              setIsLogin(!isLogin);
+              setIsLoginModal(!isLoginModal);
             }}
           >
             <Modal onClick={(e) => e.stopPropagation()}>
@@ -39,13 +39,26 @@ function LoginModal({ isLogin, setIsLogin }) {
                   <Img src="https://m.bunjang.co.kr/pc-static/resource/56db3dd43075482b1d31.png" />
                   <Title>번개장터로 중고거래 시작하기</Title>
                   <SubTitle>간편하게 중고거래 시작하기</SubTitle>
+                  <CacaoLogin>
+                    <CacaoBtn
+                      onClick={() =>
+                        window.open(
+                          "https://kauth.kakao.com/oauth/authorize?client_id=8556f063804f3a560b2aa9a26c924279&redirect_uri=http://3.35.117.161/kakao/callback&response_type=code",
+                          "_blank"
+                        )
+                      }
+                    >
+                      <CacaoImg src="https://m.bunjang.co.kr/pc-static/resource/7bf83f72cf54461af573.png" />
+                      카카오로 이용하기
+                    </CacaoBtn>
+                  </CacaoLogin>
                   <LoginForm onSubmit={submitHandler}>
                     <Input
-                      type="text"
-                      placeholder="아이디를 입력해주세요."
-                      value={user.username}
+                      type="email"
+                      placeholder="이메일을 입력해주세요."
+                      value={user.email}
                       onChange={(e) => {
-                        setUser({ ...user, username: e.target.value });
+                        setUser({ ...user, email: e.target.value });
                       }}
                     />
                     <Input
@@ -58,21 +71,21 @@ function LoginModal({ isLogin, setIsLogin }) {
                     />
                     <BtnBox>
                       <LoginBtn type="submit">Login</LoginBtn>
-                      <LoginBtn
+                      <SignUpBtn
                         type="button"
                         onClick={() => {
                           navigate(`/signup`);
                         }}
                       >
                         SignUp
-                      </LoginBtn>
+                      </SignUpBtn>
                     </BtnBox>
                   </LoginForm>
                 </ModalInnerContent>
               </Column>
               <ModalBtn
                 onClick={() => {
-                  setIsLogin(!isLogin);
+                  setIsLoginModal(!isLoginModal);
                 }}
               >
                 <BtnImg src="https://m.bunjang.co.kr/pc-static/resource/ee442d3dd827628bc5fe.png" />
@@ -112,6 +125,37 @@ const SubTitle = styled.div`
   text-align: center;
 `;
 
+const CacaoLogin = styled.form`
+  padding: 0px 70px;
+  margin-bottom: 12px;
+`;
+
+const CacaoBtn = styled.button`
+  width: 100%;
+  height: 38px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 7px 0px;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  position: relative;
+  background-color: transparent;
+  border: none;
+  &:hover {
+    background-color: #3b1e1e;
+    color: white;
+  }
+`;
+
+const CacaoImg = styled.img`
+  position: absolute;
+  top: calc(50% - 12px);
+  left: 35px;
+  width: 24px;
+  height: 24px;
+  background-size: cover;
+  background-repeat: no-repeat;
+`;
+
 const LoginForm = styled.form`
   padding: 0px 70px;
   display: flex;
@@ -124,15 +168,36 @@ const Input = styled.input`
   height: 38px;
   width: 100%;
   padding: 0px 10px;
+  border: none;
+  border-bottom: 1px solid rgb(229, 229, 229);
+  background-color: transparent;
+  outline: none;
 `;
 
 const BtnBox = styled.div`
   display: flex;
+  flex-direction: column;
   margin: 50px 0px;
-  gap: 10px;
 `;
+
 const LoginBtn = styled.button`
   height: 38px;
+  padding: 0px 20px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  background-color: rgb(216, 12, 24);
+`;
+
+const SignUpBtn = styled.button`
+  height: 38px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  color: gray;
+  background-color: transparent;
+  text-decoration-line: underline;
 `;
 
 const ModalBackground = styled.div`
