@@ -8,7 +8,11 @@ function FloaingFooter({ submitInputHandler }) {
         <StButton
           type="submit"
           form="post-product"
-          onClick={submitInputHandler}
+          // onClick={(e) => {
+          //   console.log("버튼 눌렸어여!");
+          //   e.preventDefault();
+          //   submitInputHandler(e);
+          // }}
         />
       </StFooterBox>
     </StFooter>

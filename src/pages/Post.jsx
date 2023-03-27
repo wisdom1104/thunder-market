@@ -7,10 +7,12 @@ import { Column } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
 import { __postDetail } from "../redux/modules/detailSlice";
+import { useDispatch } from "react-redux";
 
 function Post() {
+  const dispatch = useDispatch();
   const newItem = {
-    img: null,
+    img: "",
     title: "",
     cateCode: "1",
     used: false,
@@ -19,12 +21,39 @@ function Post() {
     deliveryFee: false,
     desc: "",
     isDone: false,
-    quantity: 1,
+    quantity: "1",
     thunderPay: false,
   };
+  const [inputValue, setInputValue] = useState(newItem);
 
-  const [inputValue, onChangeHandler, fileInputHandler, submitInputHandler] =
-    useInput(newItem, __postDetail);
+  // const [inputValue, onChangeHandler, fileInputHandler, submitInputHandler] =
+  //   useInput(newItem, __postDetail);
+
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+
+    setInputValue({ ...inputValue, [name]: value });
+  };
+
+  const submitInputHandler = (e) => {
+    e.preventDefault();
+    // const formData = new FormData();
+    // formData.append("title", inputValue.title);
+    // formData.append("desc", inputValue.desc);
+    // formData.append("cateCode", inputValue.cateCode);
+    // // formData.append("img", inputValue.img);
+    // formData.append("used", inputValue.used);
+    // //숫자에 comma 포함되어있으므로 숫자로 변형해주어야 함
+    // formData.append("price", Number(inputValue.price));
+    // formData.append("exchange", inputValue.exchage);
+    // formData.append("deliveryFee", inputValue.deliveryFee);
+    // // formData.append("isDone", false);
+    // formData.append("quantity", inputValue.quantity);
+    // formData.append("thunderPay", inputValue.thunderPay);
+    // console.log("formData", formData);
+    dispatch(__postDetail(inputValue));
+    console.log("얍!!");
+  };
 
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {
@@ -58,24 +87,26 @@ function Post() {
   const checkAll = (e) => {
     if (e.target.checked) {
       return setCheckList(["firstTerm", "secondTerm", "thirdTerm"]);
-      onChangeHandler();
     } else {
       return setCheckList([]);
     }
   };
 
   // 정규표현식 - 상품명 2글자 이상
-  const checkValidTitle = (item) => {
-    // 2자이상 40자 이하 한글, 특수문자, 공백포함
-    const regEx = /^[^?a-zA-Z0-9/]{2,40}$/;
-    return regEx.test(item);
-  };
+  // const checkValidTitle = (item) => {
+  //   // 2자이상 40자 이하 한글, 특수문자, 공백포함
+  //   const regEx = /^[^?a-zA-Z0-9/]{2,40}$/;
+  //   return regEx.test(item);
+  // };
 
-  console.log("상태", inputValue.used);
+  // console.log("상태", inputValue.used);
+  // console.log("교환", inputValue.exchange);
+  // console.log("번개페이", inputValue.thunderPay);
+  // console.log("운포", inputValue.deliveryFee);
 
-  console.log("교환", inputValue.exchange);
-  console.log("번개페이", inputValue.thunderPay);
-  console.log("배송비포함", inputValue.deliveryFee);
+  // console.log("inputValue.price =", inputValue.price);
+
+  console.log("inputValue =", inputValue);
 
   return (
     <Wrapper>
@@ -84,14 +115,20 @@ function Post() {
         <div>기본정보</div>
         <PostList id="post-product" onSubmit={submitInputHandler}>
           <InputList name="상품이미지" important>
-            <StPhotoInputWrapper>
+            <input
+              type="text"
+              name="img"
+              value={inputValue.img}
+              onChange={onChangeHandler}
+            />
+            {/* <StPhotoInputWrapper>
               <StPhotoInputBox>
                 이미지 등록
                 <StPhotoInput
                   type="file"
                   name="img"
                   accept="image/jpg, image/jpeg, image/png"
-                  onChange={fileInputHandler}
+                  // onChange={fileInputHandler}
                   multiple=""
                 />
               </StPhotoInputBox>
@@ -112,7 +149,7 @@ function Post() {
               <br />
               최대 지원 사이즈인 640 X 640으로 리사이즈 해서 올려주세요.(개당
               이미지 최대 10M)
-            </StPhotoInputGuide>
+            </StPhotoInputGuide> */}
           </InputList>
           <InputList name="제목" important>
             <input
@@ -121,15 +158,15 @@ function Post() {
               value={inputValue.title}
               placeholder="상품 제목을 입력해주세요."
               onChange={onChangeHandler}
-              required
-            />
-            {checkValidTitle(inputValue.title) ? null : (
+              // required
+              maxLength="40"
+            />{" "}
+            <span>{inputValue.title.length}/40</span>
+            {inputValue.title.length < 2 ? (
               <span style={{ color: "red" }}>
                 상품명을 2자 이상 입력해주세요.
               </span>
-            )}
-
-            <span>0/40</span>
+            ) : null}
           </InputList>
           <InputList name="카테고리" important>
             <Column>
@@ -204,10 +241,10 @@ function Post() {
               <input
                 type="text"
                 name="price"
-                id=""
                 placeholder="숫자만 입력해주세요."
                 value={inputValue.price}
                 onChange={onChangeHandler}
+                maxLength="9"
               />
               원
             </label>
@@ -215,9 +252,8 @@ function Post() {
               <input
                 type="checkbox"
                 name="deliveryFee"
-                // value={inputValue.deliveryFee}
                 onChange={onChangeHandler}
-                id=""
+                // checked={inputValue.deliveryFee == "true"}
               />
               배송비포함
             </label>
@@ -230,10 +266,11 @@ function Post() {
 안전하고 건전한 거래 환경을 위해 과학기술정보통신부, 한국인터넷진흥원과 번개장터(주)가 함께 합니다."
               value={inputValue.desc}
               onChange={onChangeHandler}
+              maxLength="2000"
             />
             <div>
               <span>혹시 카카오톡ID를 적으셨나요?</span>
-              <span>0/2000</span>
+              <span>{inputValue.desc.length}/2000</span>
             </div>
           </InputList>
           <InputList name="수량">
@@ -299,7 +336,7 @@ function Post() {
             </Column>
           </InputList>
         </PostList>
-        <FloaingFooter />
+        <FloaingFooter submitInputHandler={submitInputHandler} />
       </Layout>
     </Wrapper>
   );
