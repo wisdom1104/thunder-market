@@ -3,9 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { __getCards } from "../redux/modules/cardSlice";
 import { Row } from "../components/Flex";
+import { useNavigate } from "react-router-dom";
+import PhotoSlide from "./PhotoSlide";
 
 function Card() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { isLoading, error, cards } = useSelector((state) => state.cards);
 
   useEffect(() => {
@@ -18,9 +22,10 @@ function Card() {
   if (error) {
     return <div>{error.message}</div>;
   }
-  // console.log(cards);
+  console.log(cards);
   return (
     <CardSection>
+      <PhotoSlide />
       <Title>오늘의 상품 추천</Title>
       <CardBox>
         {cards.length === 0 ? (
@@ -28,7 +33,13 @@ function Card() {
         ) : (
           cards.map((item) => {
             return (
-              <StCard key={item.id}>
+              <StCard
+                key={item.id}
+                onClick={() => {
+                  navigate(`/products/${item.id}`);
+                  console.log(item.id);
+                }}
+              >
                 <CardImg>
                   <img
                     style={{ width: "194px", height: "194px" }}
@@ -43,13 +54,12 @@ function Card() {
                     </Thuner>
                   ) : null}
                 </CardImg>
-                {/* <div>{item.thunderPay}</div> */}
                 <CardText>
                   <CardTitle>{item.title}</CardTitle>
                   <CardPriceTime>
-                    <CardPrice>{item.price}</CardPrice>
+                    <CardPrice>{item.price.toLocaleString()}</CardPrice>
                     <CardTime>
-                      <span>2시간 전</span>
+                      <span>{item.timeInterval}</span>
                     </CardTime>
                   </CardPriceTime>
                 </CardText>
@@ -92,6 +102,7 @@ const StCard = styled.div`
   border: 1px solid rgb(238, 238, 238);
   background: rgb(255, 255, 255);
   width: 194px;
+  cursor: pointer;
 `;
 
 const CardImg = styled.div`

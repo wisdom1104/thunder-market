@@ -181,6 +181,7 @@ const StSearchInput = styled.input`
   color: rgb(102, 102, 102);
   flex-grow: 0.9;
   border: 1px solid transparent;
+  outline: none;
 `;
 
 const StSearchIcon = styled.a`
@@ -196,13 +197,13 @@ const StMemeberBar = styled.div`
   flex-grow: 1;
 `;
 
-const StMemberButton = styled.button`
+const StMemberButton = styled.a`
   margin-left: 30px;
   display: flex;
+  -webkit-box-align: center;
   align-items: center;
   position: relative;
-  border: 1px solid transparent;
-  background-color: transparent;
+  text-decoration: none;
 `;
 
 const StMemberPage = styled.a`

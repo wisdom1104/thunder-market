@@ -46,7 +46,7 @@ function Products() {
     dispatch(__getDetail(+pdId));
 
     return () => {};
-  }, []);
+  }, [pdId]);
 
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {

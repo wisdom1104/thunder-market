@@ -25,9 +25,10 @@ const initialState = {
 
     try {
       const response = await api.post(`${process.env.REACT_APP_SERVER_URL}/products`, payload)
-      console.log(response.data);
+      console.log("response.data = ",response.data);
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
+      console.log("error = ", error);
       return thunkAPI.rejectWithValue(error)
     }
   })
