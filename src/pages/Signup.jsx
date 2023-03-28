@@ -16,7 +16,6 @@ function Signup() {
 
   // 회원가입
   const [user, setUser] = useState({
-    // username: "",
     email: "",
     password: "",
     nick: "",
@@ -24,9 +23,8 @@ function Signup() {
   const submitHandler = async (e) => {
     e.preventDefault();
     // 공란 검사
-
     if (
-      (possibleEmail && possibleNick && user.email === "") ||
+      user.email === "" ||
       user.password === "" ||
       user.passwordCheck === "" ||
       user.nick === ""
