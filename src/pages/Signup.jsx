@@ -32,10 +32,14 @@ function Signup() {
       alert("빈 칸을 작성해 주세요.");
       return;
     }
-
-    const result = await dispatch(__signUp(user));
-    if (result.type === "signUp/fulfilled") {
-      navigate("/");
+    if (possibleEmail && possibleNick) {
+      const result = await dispatch(__signUp(user));
+      if (result.type === "signUp/fulfilled") {
+        navigate("/");
+      }
+    } else {
+      alert("중복 검사를 모두 해주세요.");
+      return;
     }
   };
 
