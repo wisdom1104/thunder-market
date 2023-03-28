@@ -45,6 +45,7 @@ import {
   __doneDetail,
   __getDetail,
 } from "../redux/modules/detailSlice";
+import { cookies } from "../shared/cookies";
 
 function Products() {
   const params = useParams();
@@ -53,6 +54,8 @@ function Products() {
   const { posts, isLoading, error } = useSelector((state) => state.detail);
   let [isDeleteModal, setIsDeleteModal] = useState(false);
   let [isDoneModal, setIsDoneModal] = useState(false);
+
+  const nick = cookies.get("nick");
 
   console.log("posts = ", posts);
 
@@ -64,6 +67,8 @@ function Products() {
 
     return () => {};
   }, [pdId, done]);
+
+  // const nick = cookies.get()
 
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {
@@ -107,16 +112,24 @@ function Products() {
                 <ProductInfo>
                   <ProductTitleBox>
                     <ProductTitle>{posts?.title}</ProductTitle>
-                    <button onClick={() => navigate(`/products/${pdId}/edit`)}>
-                      수정
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsDeleteModal(!isDeleteModal);
-                      }}
-                    >
-                      삭제
-                    </button>
+                    {nick == posts?.nick ? (
+                      <>
+                        {" "}
+                        <button
+                          onClick={() => navigate(`/products/${pdId}/edit`)}
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsDeleteModal(!isDeleteModal);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    ) : null}
+
                     <Row>
                       <ProductPrice>{posts?.price}원</ProductPrice>
                       {posts?.thunderPay ? <ThunderPayIcon /> : null}
