@@ -52,7 +52,7 @@ export const useInput = (initialValue, action) => {
     formData.append("thunderPay", initialValue.thunderPay);
     console.log("formData", formData);
     dispatch(action({ formData, inputValue }));
-    console.log("얍!!");
+    // console.log("얍!!");
   };
 
   return [
