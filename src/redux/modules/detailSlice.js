@@ -4,7 +4,7 @@ import axios from 'axios'
 import api from '../../axios/api'
 
 const initialState = {
-    details: [],
+    posts: [],
     isLoading: false,
     error: null,
   }
@@ -26,12 +26,30 @@ const initialState = {
     try {
       const response = await api.post(`${process.env.REACT_APP_SERVER_URL}/products`, payload)
       console.log("response.data = ",response.data);
+
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
       console.log("error = ", error);
       return thunkAPI.rejectWithValue(error)
     }
   })
+
+  // 게시물 삭제 함수
+  export const __deleteDetail = createAsyncThunk('deleteDetail', async (payload, thunkAPI) => {
+    console.log("payload",payload);
+
+    try {
+      const {pdId} = payload
+      const response = await api.delete(`${process.env.REACT_APP_SERVER_URL}/products/${pdId}`)
+      alert("삭제되었습니다")
+      console.log("response.data = ",response.data);
+      return thunkAPI.fulfillWithValue(payload)
+    } catch (error) {
+      console.log("error = ", error);
+      return thunkAPI.rejectWithValue(error)
+    }
+  })
+
 
 const detailSlice = createSlice({
   name: 'detail',
@@ -64,6 +82,23 @@ const detailSlice = createSlice({
             state.isLoading = false
             state.error = false
             state.posts = action.payload
+          },
+          [__postDetail.rejected]: (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+          },
+
+
+                    // 게시물 삭제 Reducer -------------------------------
+        [__deleteDetail.pending]: (state, action) => {
+            state.isLoading = true
+            state.error = false
+          },
+          [__deleteDetail.fulfilled]: (state, action) => {
+            state.isLoading = false
+            state.error = false
+            state.posts = []
+            action.payload.next()
           },
           [__postDetail.rejected]: (state, action) => {
             state.isLoading = false

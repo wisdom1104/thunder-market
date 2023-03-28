@@ -10,39 +10,39 @@ import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
 import { __uploadImg } from "../redux/modules/imageSlice";
 import { useDispatch, useSelector } from "react-redux";
 import imageCompression from "browser-image-compression";
-import { __getImages } from "../redux/modules/imageSlice";
-import { cookies } from "../shared/cookies";
-import { useNavigate } from "react-router";
+import { useParams } from "react-router";
 
-function Post() {
+function Edit() {
   const dispatch = useDispatch();
-  const { images } = useSelector((state) => state.detail);
-  const newItem = {
-    img: "",
-    title: "",
-    cateCode: "1",
-    used: false,
-    exchange: false,
-    price: "",
-    deliveryFee: false,
-    desc: "",
-    isDone: false,
-    quantity: "1",
-    thunderPay: false,
-  };
-  const token = cookies.get("token");
-  const navigate = useNavigate();
+
+  const params = useParams();
+  const pdId = params.pdId;
+  console.log("pdId", pdId);
 
   useEffect(() => {
-    if (!token) {
-      alert("로그인이 필요합니다!");
-      navigate("/");
-    }
+    dispatch(__getDetail(+pdId));
 
     return () => {};
-  }, []);
+  }, [pdId]);
+  const { posts } = useSelector((state) => state.detail);
 
+  const newItem = {
+    img: "",
+    title: posts?.title,
+    cateCode: posts?.cateCode,
+    used: posts?.used,
+    exchange: posts?.exchange,
+    price: posts?.price,
+    deliveryFee: posts?.deliveryFee,
+    desc: posts.desc,
+    isDone: posts?.isDone,
+    quantity: posts?.quantity,
+    thunderPay: posts?.thunderPay,
+  };
   const [inputValue, setInputValue] = useState(newItem);
+
+  // const [inputValue, onChangeHandler, fileInputHandler, submitInputHandler] =
+  //   useInput(newItem, __postDetail);
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -50,42 +50,54 @@ function Post() {
     setInputValue({ ...inputValue, [name]: value });
   };
 
-  const changeNumberHandler = (e) => {
+  const onCheckHandler = (e) => {
     const { name, value } = e.target;
-    if (isNaN(Number(value.replaceAll(",", "")))) {
-      alert("숫자만 입력해주세요!");
-    }
-    const removedCommaValue = Number(value.replaceAll(",", ""));
+
     setInputValue({
       ...inputValue,
-      [name]: removedCommaValue.toLocaleString(),
+      [name]: value == "true" ? "false" : "true",
     });
   };
 
+  // const compressImgHandler = (fileSrc) => {
+  //   const options = {
+  //     maxSizeMB: 5,
+  //     maxWidthOrHeight: 640,
+  //     useWebWorker: true,
+  //   };
+  //   try {
+  //     const compressedFile = imageCompression(fileSrc, options);
+  //     alert("이미지 압축 됐어요!");
+  //     return compressedFile;
+  //   } catch (error) {
+  //     alert("이미지 파일이 너무 큽니다!");
+  //   }
+  // };
+
   const fileInputHandler = (e) => {
-    const { name } = e.target;
     const imgData = e.target.files[0];
-    setInputValue({ ...inputValue, [name]: imgData });
+    console.log("imgData", imgData);
+    const compressImgHandler = (fileSrc) => {
+      const options = {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 640,
+        useWebWorker: true,
+      };
+
+      const compressedFile = imageCompression(fileSrc, options);
+      alert("이미지 압축 됐어요!");
+      return compressedFile;
+    };
+    const compressedImgData = compressImgHandler(imgData);
+    const formData = new FormData();
+    formData.append("image", imgData);
+    console.log("formData =", formData.get("image"));
+    dispatch(__uploadImg(formData));
   };
 
   const submitInputHandler = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("title", inputValue.title);
-    formData.append("desc", inputValue.desc);
-    formData.append("cateCode", inputValue.cateCode);
-    formData.append("img", inputValue.img);
-    formData.append("used", inputValue.used);
-    //숫자에 comma 포함되어있으므로 숫자로 변형해주어야 함
-    formData.append("price", Number(inputValue.price));
-    formData.append("exchange", inputValue.exchage);
-    formData.append("deliveryFee", inputValue.deliveryFee);
-    // formData.append("isDone", false);
-    formData.append("quantity", inputValue.quantity);
-    formData.append("thunderPay", inputValue.thunderPay);
-    console.log("formData", formData);
-
-    dispatch(__postDetail(formData));
+    dispatch(__postDetail(inputValue));
   };
 
   // 카테고리코드 => 한글 변환 switch 문
@@ -112,20 +124,9 @@ function Post() {
     }
   };
 
-  // const changeRadioHandler = (e) => {
-  //   const isUsed = e.currentTarget.value == "true" ? true : false;
-  // };
-
-  const onCheckHandler = (e) => {
-    const { name, value } = e.target;
-
-    setInputValue({
-      ...inputValue,
-      [name]: value == "true" ? "false" : "true",
-    });
-  };
-
-  console.log("운포", inputValue.deliveryFee);
+  // const changeRadioHandler = (e)=>{
+  //   const isUsed = e.currentTarget.value =='true'?true:false
+  // }
 
   const [checkList, setCheckList] = useState([]);
   const checkAll = (e) => {
@@ -160,22 +161,25 @@ function Post() {
         <PostList id="post-product" onSubmit={submitInputHandler}>
           <InputList name="상품이미지" important>
             <StPhotoInputWrapper>
-              <StPhotoInputBox>
-                이미지 등록
-                <StPhotoInput
-                  type="file"
-                  name="img"
-                  accept="image/jpg, image/jpeg, image/png"
-                  onChange={fileInputHandler}
-                  multiple=""
+              <form method="POST" action="/image" enctype="multipart/form-data">
+                <StPhotoInputBox>
+                  이미지 등록
+                  <StPhotoInput
+                    type="file"
+                    name="img"
+                    accept="image/jpg, image/jpeg, image/png"
+                    onChange={fileInputHandler}
+                    multiple=""
+                  />
+                </StPhotoInputBox>
+              </form>
+              {/* {posts.img?.map((item) => (
+                <img
+                  style={{ width: " 202px", height: "202px" }}
+                  src={`https://thundermarket5.s3.ap-northeast-2.amazonaws.com/uploaded-image/${item}`}
+                  alt="이미지 미리보기"
                 />
-              </StPhotoInputBox>
-
-              <img
-                style={{ width: " 202px", height: "202px" }}
-                src={`https://thundermarket5.s3.ap-northeast-2.amazonaws.com/uploaded-image/${images}`}
-                alt="이미지 미리보기"
-              />
+              ))} */}
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
@@ -218,6 +222,7 @@ function Post() {
               <select
                 name="cateCode"
                 value={inputValue.cateCode}
+                id=""
                 onChange={onChangeHandler}
                 required
               >
@@ -282,8 +287,8 @@ function Post() {
                 name="price"
                 placeholder="숫자만 입력해주세요."
                 value={inputValue.price}
-                onChange={changeNumberHandler}
-                maxLength="11"
+                onChange={onChangeHandler}
+                maxLength="9"
               />
               원
             </label>
@@ -291,8 +296,7 @@ function Post() {
               <input
                 type="checkbox"
                 name="deliveryFee"
-                onChange={(e) => onCheckHandler(e)}
-                value={inputValue.deliveryFee}
+                onChange={onCheckHandler}
                 // checked={inputValue.deliveryFee == "true"}
               />
               배송비포함
@@ -300,19 +304,14 @@ function Post() {
           </InputList>
           <InputList name="설명" important>
             <StDescInput
+              type="text"
               name="desc"
-              placeholder=""
-              cols="40"
-              rows="8"
+              placeholder="여러 장의 상품 사진과 구입 연도, 브랜드, 사용감, 하자 유무 등 구매자에게 필요한 정보를 꼭 포함해 주세요. (10자 이상)
+안전하고 건전한 거래 환경을 위해 과학기술정보통신부, 한국인터넷진흥원과 번개장터(주)가 함께 합니다."
               value={inputValue.desc}
               onChange={onChangeHandler}
               maxLength="2000"
-            >
-              여러 장의 상품 사진과 구입 연도, 브랜드, 사용감, 하자 유무 등
-              구매자에게 필요한 정보를 꼭 포함해 주세요. (10자 이상) 안전하고
-              건전한 거래 환경을 위해 과학기술정보통신부, 한국인터넷진흥원과
-              번개장터(주)가 함께 합니다.
-            </StDescInput>
+            />
             <div>
               <span>혹시 카카오톡ID를 적으셨나요?</span>
               <span>{inputValue.desc.length}/2000</span>
@@ -325,7 +324,6 @@ function Post() {
                 name="quantity"
                 value={inputValue.quantity}
                 onChange={onChangeHandler}
-                id=""
               />
               개
             </label>
@@ -337,6 +335,7 @@ function Post() {
                 <input
                   type="checkbox"
                   name="thunderPay"
+                  value={inputValue.thunderPay}
                   onChange={(e) => {
                     checkAll(e);
                     onCheckHandler(e);
@@ -458,5 +457,4 @@ const StDescInput = styled.textarea`
     border: 1px solid gray;
   } */
 `;
-
-export default Post;
+export default Edit;
