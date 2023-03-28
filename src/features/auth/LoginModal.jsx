@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { isLoginActions, __logIn } from "../redux/modules/loginSlice";
-import { Column } from "./Flex";
+import { isLoginActions, __logIn } from "../../redux/modules/loginSlice";
+import { Column } from "../../components/Flex";
 
 function LoginModal({ isLoginModal, setIsLoginModal }) {
   const dispatch = useDispatch();

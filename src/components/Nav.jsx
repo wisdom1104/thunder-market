@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
-import LoginModal from "./LoginModal";
+import LoginModal from "../features/auth/LoginModal";
 import LogoutModal from "./LogoutModal";
 
 function Nav() {
