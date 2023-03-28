@@ -73,6 +73,7 @@ export const __logIn = createAsyncThunk("logIn", async (thisUser, thunk) => {
       path: "/",
       maxAge: 3540,
     });
+    cookies.set("nick", response.data.nick, { path: "/", maxAge: 3540 });
     return thunk.fulfillWithValue(thisUser);
   } catch (e) {
     // console.log(e);
@@ -97,6 +98,7 @@ export const loginSlice = createSlice({
     logout(state) {
       state.isLogin = false;
       cookies.remove("token");
+      cookies.remove("nick");
     },
   },
   extraReducers: {},
