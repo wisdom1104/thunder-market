@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
+import DeleteModal from "../components/Product/DeleteModal";
+import DoneModal from "../components/Product/DoneModal";
 import {
   ProductTitleBox,
   ProductInfo,
@@ -26,30 +28,42 @@ import {
   ThunderTalkButton,
   BuyButton,
   RelatedItemBox,
+  DescWrapper,
+  DescBox,
+  StoreBox,
+  DescTitle,
+  DescContent,
 } from "../components/Product/DetailStyle";
+import ThunderPayIcon from "../components/Product/ThunderPayIcon";
 import DetailCard from "../components/Product/DetailCard";
 import DetailState from "../components/Product/DetailState";
-import { Row } from "../components/Flex";
+import { Column, Row, RowCenter } from "../components/Flex";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { __deleteDetail, __getDetail } from "../redux/modules/detailSlice";
+import {
+  __deleteDetail,
+  __doneDetail,
+  __getDetail,
+} from "../redux/modules/detailSlice";
 
 function Products() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { posts, isLoading, error } = useSelector((state) => state.detail);
-
-  const pdId = params.pdId;
+  let [isDeleteModal, setIsDeleteModal] = useState(false);
+  let [isDoneModal, setIsDoneModal] = useState(false);
 
   console.log("posts = ", posts);
+
+  const pdId = params.pdId;
+  const done = posts?.done;
+
   useEffect(() => {
     dispatch(__getDetail(pdId));
 
     return () => {};
-  }, [pdId]);
-
-  console.log("pdId = ", pdId);
+  }, [pdId, done]);
 
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {
@@ -74,6 +88,7 @@ function Products() {
         return null;
     }
   };
+
   if (isLoading) {
     return <div>로딩중...</div>;
   }
@@ -84,7 +99,9 @@ function Products() {
         <div>{category(posts?.cateCode)}</div>
         <ProductInfoWrapper>
           <ProductInfoBox>
-            <ProductInfoImgBox></ProductInfoImgBox>
+            <ProductInfoImgBox
+              src={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${posts?.img}`}
+            ></ProductInfoImgBox>
             <ProductInfoContentWrapper>
               <ProductInfoContentBox>
                 <ProductInfo>
@@ -95,19 +112,15 @@ function Products() {
                     </button>
                     <button
                       onClick={() => {
-                        dispatch(
-                          __deleteDetail({
-                            pdId,
-                            next: () => {
-                              navigate("/");
-                            },
-                          })
-                        );
+                        setIsDeleteModal(!isDeleteModal);
                       }}
                     >
                       삭제
                     </button>
-                    <ProductPrice>{posts?.price}원</ProductPrice>
+                    <Row>
+                      <ProductPrice>{posts?.price}원</ProductPrice>
+                      {posts?.thunderPay ? <ThunderPayIcon /> : null}
+                    </Row>
                   </ProductTitleBox>
                   <ProductStateBox>
                     <ProductStateLikeWrapper>
@@ -193,7 +206,17 @@ function Products() {
                       />
                       번개톡
                     </ThunderTalkButton>
-                    <BuyButton>바로구매</BuyButton>
+                    {done ? (
+                      <FavoriteButton>판매완료</FavoriteButton>
+                    ) : (
+                      <BuyButton
+                        onClick={() => {
+                          setIsDoneModal(!isDoneModal);
+                        }}
+                      >
+                        바로구매
+                      </BuyButton>
+                    )}
                   </FavoriteButtonWrapper>
                 </ProductInfoBtnBox>
               </ProductInfoContentBox>
@@ -204,7 +227,7 @@ function Products() {
         <>
           연관상품
           <RelatedItemBox>
-            {posts?.productList?.map((item) => (
+            {posts?.productList.map((item) => (
               <DetailCard
                 key={item.id}
                 title={item.title}
@@ -214,12 +237,27 @@ function Products() {
             ))}
           </RelatedItemBox>
         </>
-        <div>
-          <div>{posts?.desc}</div>
-          <div>상점정보</div>
-        </div>
+        <DescWrapper>
+          <DescBox>
+            <Column>
+              <DescTitle>상품정보</DescTitle>
+              <DescContent>{posts?.desc}</DescContent>
+            </Column>
+          </DescBox>
+          <StoreBox>상점정보</StoreBox>
+        </DescWrapper>
         <div>광고</div>
       </Layout>
+      <DeleteModal
+        isDeleteModal={isDeleteModal}
+        setIsDeleteModal={setIsDeleteModal}
+        pdId={pdId}
+      />
+      <DoneModal
+        isDoneModal={isDoneModal}
+        setIsDoneModal={setIsDoneModal}
+        pdId={pdId}
+      />
     </Wrapper>
   );
 }

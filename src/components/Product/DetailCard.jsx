@@ -12,7 +12,9 @@ function DetailCard({ title, pdId, img }) {
         }}
       >
         <CardImgBox>
-          <CardImg src={img} />
+          <CardImg
+            src={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${img}`}
+          />
           <CardImgTooltip></CardImgTooltip>
         </CardImgBox>
       </CardBox>
