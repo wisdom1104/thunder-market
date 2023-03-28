@@ -227,7 +227,7 @@ function Products() {
         <>
           연관상품
           <RelatedItemBox>
-            {posts?.productList.map((item) => (
+            {posts?.productList?.map((item) => (
               <DetailCard
                 key={item.id}
                 title={item.title}
