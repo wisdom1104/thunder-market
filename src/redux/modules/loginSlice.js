@@ -69,7 +69,10 @@ export const __logIn = createAsyncThunk("logIn", async (thisUser, thunk) => {
       `${process.env.REACT_APP_SERVER_URL}/login`,
       thisUser
     );
-    cookies.set("token", response.headers.authorization, { path: "/" });
+    cookies.set("token", response.headers.authorization, {
+      path: "/",
+      maxAge: 3540,
+    });
     return thunk.fulfillWithValue(thisUser);
   } catch (e) {
     // console.log(e);
@@ -94,7 +97,6 @@ export const loginSlice = createSlice({
     logout(state) {
       state.isLogin = false;
       cookies.remove("token");
-      // cookies.remove("nickname");
     },
   },
   extraReducers: {},

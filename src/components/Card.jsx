@@ -2,19 +2,28 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { __getCards } from "../redux/modules/cardSlice";
-import { Row } from "../components/Flex";
 import { useNavigate } from "react-router-dom";
 import PhotoSlide from "./PhotoSlide";
+import { useInView } from "react-intersection-observer";
 
 function Card() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [ref, inView] = useInView();
   const { isLoading, error, cards } = useSelector((state) => state.cards);
 
   useEffect(() => {
-    dispatch(__getCards());
+    if (cards.length === 0) {
+      dispatch(__getCards());
+      return;
+    }
   }, []);
+
+  useEffect(() => {
+    if (cards.length !== 0 && inView) {
+      dispatch(__getCards());
+    }
+  }, [inView]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,7 +31,7 @@ function Card() {
   if (error) {
     return <div>{error.message}</div>;
   }
-  console.log(cards);
+  // console.log(cards);
   return (
     <CardSection>
       <PhotoSlide />
@@ -68,6 +77,7 @@ function Card() {
           })
         )}
       </CardBox>
+      {/* <div ref={ref} /> */}
     </CardSection>
   );
 }
