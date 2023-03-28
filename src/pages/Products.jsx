@@ -131,7 +131,9 @@ function Products() {
                     ) : null}
 
                     <Row>
-                      <ProductPrice>{posts?.price}원</ProductPrice>
+                      <ProductPrice>
+                        {posts?.price?.toLocaleString()}원
+                      </ProductPrice>
                       {posts?.thunderPay ? <ThunderPayIcon /> : null}
                     </Row>
                   </ProductTitleBox>

@@ -33,6 +33,17 @@ function Post() {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState(newItem);
 
+  // const [
+  //   inputValue,
+  //   onChangeHandler,
+  //   submitInputHandler,
+  //   onCheckHandler,
+  //   changeNumberHandler,
+  //   fileInputHandler,
+  // ] = useInput(newItem, __postDetail);
+
+  console.log(inputValue);
+
   //이미지 업로드시 화면 재렌더링을 위한 useEffect
   useEffect(() => {
     if (!token) {
@@ -73,8 +84,6 @@ function Post() {
     });
   };
 
-  const reader = new FileReader();
-
   // 이미지 파일 업로드 함수
   const fileInputHandler = async (e) => {
     const { name } = e.target;
@@ -105,17 +114,24 @@ function Post() {
 
   // 업로드한 이미지 미리보기
   const preview = () => {
-    const uploadedImg = inputValue.img;
+    const uploadedImg = inputValue?.img;
+    const previewBox = document.querySelector(".image-preview");
+    const reader = new FileReader();
     if (!uploadedImg) {
       return false;
     }
-    const previewBox = document.querySelector(".image-preview");
+
     reader.onload = () => {
-      //preview 백그라운ㅇ드 이미지 바꿔주기
+      //preview 백그라운드 이미지 바꿔주기
+      console.log("reader.result", reader.result);
       previewBox.style.backgroundImage = `url(${reader.result})`;
     };
 
     reader.readAsDataURL(uploadedImg);
+  };
+
+  const deletePhotoHandler = () => {
+    setInputValue({ ...inputValue, img: null });
   };
 
   const submitFile = {
@@ -131,7 +147,6 @@ function Post() {
     thunderPay: inputValue.thunderPay,
   };
 
-  console.log("submitFile", submitFile.price);
   // 글 작성 함수
   const submitInputHandler = async (e) => {
     e.preventDefault();
@@ -139,11 +154,6 @@ function Post() {
     const dto = new Blob([JSON.stringify(submitFile)], {
       type: "application/json",
     });
-    // const submitImage = new Blob(inputValue.img, {
-    //   type: "image/jpeg",
-    // });
-
-    const jsonItem = JSON.stringify(submitFile);
 
     const formData = new FormData();
     formData.append("image", inputValue.img);
@@ -205,11 +215,14 @@ function Post() {
                   name="img"
                   accept="image/jpeg"
                   onChange={fileInputHandler}
-                  multiple=""
                 />
               </StPhotoInputBox>
 
-              <StPhotoPreview className="image-preview"></StPhotoPreview>
+              <StPhotoPreview className="image-preview">
+                <button type="button" onClick={deletePhotoHandler}>
+                  사진삭제
+                </button>
+              </StPhotoPreview>
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>

@@ -22,7 +22,6 @@ const initialState = {
   // 게시물 작성 함수
   export const __postDetail = createAsyncThunk('postDetail', async (payload, thunkAPI) => {
     try {
-      
       const response = await api.post(`/products`, payload, {
         headers:{
           'Content-Type': 'multipart/form-data',
