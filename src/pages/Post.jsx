@@ -7,10 +7,8 @@ import { Column } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
 import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
-import { __uploadImg } from "../redux/modules/imageSlice";
 import { useDispatch, useSelector } from "react-redux";
 import imageCompression from "browser-image-compression";
-import { __getImages } from "../redux/modules/imageSlice";
 import { cookies } from "../shared/cookies";
 import { useNavigate } from "react-router";
 
