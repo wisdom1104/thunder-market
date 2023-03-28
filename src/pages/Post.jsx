@@ -3,7 +3,7 @@ import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import InputList from "../components/Post/InputList";
 import styled from "styled-components";
-import { Column } from "../components/Flex";
+import { Column, Row } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
 import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
@@ -11,12 +11,12 @@ import { useDispatch, useSelector } from "react-redux";
 import imageCompression from "browser-image-compression";
 import { cookies } from "../shared/cookies";
 import { useNavigate } from "react-router";
+import { async } from "q";
 
 function Post() {
   const dispatch = useDispatch();
-  const { images } = useSelector((state) => state.detail);
   const newItem = {
-    img: "",
+    img: null,
     title: "",
     cateCode: "1",
     used: false,
@@ -28,26 +28,29 @@ function Post() {
     quantity: "1",
     thunderPay: false,
   };
+
   const token = cookies.get("token");
   const navigate = useNavigate();
+  const [inputValue, setInputValue] = useState(newItem);
 
+  //이미지 업로드시 화면 재렌더링을 위한 useEffect
   useEffect(() => {
     if (!token) {
       alert("로그인이 필요합니다!");
       navigate("/");
     }
+    preview();
 
     return () => {};
-  }, []);
+  }, [inputValue.img]);
 
-  const [inputValue, setInputValue] = useState(newItem);
-
+  // 일반 텍스트 onChange 함수
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
-
     setInputValue({ ...inputValue, [name]: value });
   };
 
+  // comma 찍힌 숫자로 변경하는 함수
   const changeNumberHandler = (e) => {
     const { name, value } = e.target;
     if (isNaN(Number(value.replaceAll(",", "")))) {
@@ -60,30 +63,97 @@ function Post() {
     });
   };
 
-  const fileInputHandler = (e) => {
+  // 라디오 값 변경 함수
+  const onCheckHandler = (e) => {
+    const { name, value } = e.target;
+
+    setInputValue({
+      ...inputValue,
+      [name]: value == "true" ? "false" : "true",
+    });
+  };
+
+  const reader = new FileReader();
+
+  // 이미지 파일 업로드 함수
+  const fileInputHandler = async (e) => {
     const { name } = e.target;
     const imgData = e.target.files[0];
+
+    const compressImgHandler = (fileSrc) => {
+      const options = {
+        maxSizeMB: 5,
+        maxWidthOrHeight: 640,
+        useWebWorker: true,
+      };
+      try {
+        const compressedFile = imageCompression(fileSrc, options);
+        return compressedFile;
+      } catch (error) {
+        alert("이미지 파일이 너무 큽니다!");
+      }
+    };
+
+    const compressedImg = await compressImgHandler(imgData);
+    // const readImg = reader.readAsDataURL(compressedImg);
+    console.log("compressedImg", compressedImg);
+    console.log("imgData", imgData);
+    // console.log(("readImg", readImg));
+
     setInputValue({ ...inputValue, [name]: imgData });
   };
 
-  const submitInputHandler = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("title", inputValue.title);
-    formData.append("desc", inputValue.desc);
-    formData.append("cateCode", inputValue.cateCode);
-    formData.append("img", inputValue.img);
-    formData.append("used", inputValue.used);
-    //숫자에 comma 포함되어있으므로 숫자로 변형해주어야 함
-    formData.append("price", Number(inputValue.price));
-    formData.append("exchange", inputValue.exchage);
-    formData.append("deliveryFee", inputValue.deliveryFee);
-    // formData.append("isDone", false);
-    formData.append("quantity", inputValue.quantity);
-    formData.append("thunderPay", inputValue.thunderPay);
-    console.log("formData", formData);
+  // 업로드한 이미지 미리보기
+  const preview = () => {
+    const uploadedImg = inputValue.img;
+    if (!uploadedImg) {
+      return false;
+    }
+    const previewBox = document.querySelector(".image-preview");
+    reader.onload = () => {
+      //preview 백그라운ㅇ드 이미지 바꿔주기
+      previewBox.style.backgroundImage = `url(${reader.result})`;
+    };
 
-    dispatch(__postDetail(formData));
+    reader.readAsDataURL(uploadedImg);
+  };
+
+  const submitFile = {
+    title: inputValue.title,
+    cateCode: inputValue.cateCode,
+    used: inputValue.used,
+    exchange: inputValue.exchange,
+    // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
+    price: Number(inputValue.price.replaceAll(",", "")),
+    deliveryFee: inputValue.deliveryFee,
+    desc: inputValue.desc,
+    quantity: Number(inputValue.quantity),
+    thunderPay: inputValue.thunderPay,
+  };
+
+  console.log("submitFile", submitFile.price);
+  // 글 작성 함수
+  const submitInputHandler = async (e) => {
+    e.preventDefault();
+    // File이 아닌 데이터들을 json 형태로 변환하여 보내주기 위함
+    const dto = new Blob([JSON.stringify(submitFile)], {
+      type: "application/json",
+    });
+    // const submitImage = new Blob(inputValue.img, {
+    //   type: "image/jpeg",
+    // });
+
+    const jsonItem = JSON.stringify(submitFile);
+
+    const formData = new FormData();
+    formData.append("image", inputValue.img);
+    formData.append("dto", dto);
+
+    console.log("key : image", formData.get("image"));
+    console.log("key : dto", formData.get("dto"));
+
+    await dispatch(__postDetail(formData));
+    navigate("/");
   };
 
   // 카테고리코드 => 한글 변환 switch 문
@@ -110,21 +180,7 @@ function Post() {
     }
   };
 
-  // const changeRadioHandler = (e) => {
-  //   const isUsed = e.currentTarget.value == "true" ? true : false;
-  // };
-
-  const onCheckHandler = (e) => {
-    const { name, value } = e.target;
-
-    setInputValue({
-      ...inputValue,
-      [name]: value == "true" ? "false" : "true",
-    });
-  };
-
-  console.log("운포", inputValue.deliveryFee);
-
+  // 번개페이 한꺼번에 체크하기 위한 함수
   const [checkList, setCheckList] = useState([]);
   const checkAll = (e) => {
     if (e.target.checked) {
@@ -133,22 +189,6 @@ function Post() {
       return setCheckList([]);
     }
   };
-
-  // 정규표현식 - 상품명 2글자 이상
-  // const checkValidTitle = (item) => {
-  //   // 2자이상 40자 이하 한글, 특수문자, 공백포함
-  //   const regEx = /^[^?a-zA-Z0-9/]{2,40}$/;
-  //   return regEx.test(item);
-  // };
-
-  // console.log("상태", inputValue.used);
-  // console.log("교환", inputValue.exchange);
-  // console.log("번개페이", inputValue.thunderPay);
-  // console.log("운포", inputValue.deliveryFee);
-
-  // console.log("inputValue.price =", inputValue.price);
-
-  console.log("inputValue =", inputValue);
 
   return (
     <Wrapper>
@@ -163,17 +203,13 @@ function Post() {
                 <StPhotoInput
                   type="file"
                   name="img"
-                  accept="image/jpg, image/jpeg, image/png"
+                  accept="image/jpeg"
                   onChange={fileInputHandler}
                   multiple=""
                 />
               </StPhotoInputBox>
 
-              <img
-                style={{ width: " 202px", height: "202px" }}
-                src={`https://thundermarket5.s3.ap-northeast-2.amazonaws.com/uploaded-image/${images}`}
-                alt="이미지 미리보기"
-              />
+              <StPhotoPreview className="image-preview"></StPhotoPreview>
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
@@ -194,21 +230,27 @@ function Post() {
             </StPhotoInputGuide>
           </InputList>
           <InputList name="제목" important>
-            <input
-              type="text"
-              name="title"
-              value={inputValue.title}
-              placeholder="상품 제목을 입력해주세요."
-              onChange={onChangeHandler}
-              // required
-              maxLength="40"
-            />{" "}
-            <span>{inputValue.title.length}/40</span>
-            {inputValue.title.length < 2 ? (
-              <span style={{ color: "red" }}>
-                상품명을 2자 이상 입력해주세요.
-              </span>
-            ) : null}
+            <Column>
+              <div>
+                <input
+                  type="text"
+                  name="title"
+                  value={inputValue.title}
+                  placeholder="상품 제목을 입력해주세요."
+                  onChange={onChangeHandler}
+                  // required
+                  maxLength="40"
+                />{" "}
+                <span>{inputValue.title.length}/40</span>
+              </div>
+              <div>
+                {inputValue.title.length < 2 ? (
+                  <span style={{ color: "orange" }}>
+                    상품명을 2자 이상 입력해주세요.
+                  </span>
+                ) : null}
+              </div>
+            </Column>
           </InputList>
           <InputList name="카테고리" important>
             <Column>
@@ -297,24 +339,31 @@ function Post() {
             </label>
           </InputList>
           <InputList name="설명" important>
-            <StDescInput
-              name="desc"
-              placeholder=""
-              cols="40"
-              rows="8"
-              value={inputValue.desc}
-              onChange={onChangeHandler}
-              maxLength="2000"
-            >
-              여러 장의 상품 사진과 구입 연도, 브랜드, 사용감, 하자 유무 등
+            <Column>
+              <Column>
+                <StDescInput
+                  name="desc"
+                  placeholder="여러 장의 상품 사진과 구입 연도, 브랜드, 사용감, 하자 유무 등
               구매자에게 필요한 정보를 꼭 포함해 주세요. (10자 이상) 안전하고
               건전한 거래 환경을 위해 과학기술정보통신부, 한국인터넷진흥원과
-              번개장터(주)가 함께 합니다.
-            </StDescInput>
-            <div>
-              <span>혹시 카카오톡ID를 적으셨나요?</span>
-              <span>{inputValue.desc.length}/2000</span>
-            </div>
+              번개장터(주)가 함께 합니다."
+                  cols="40"
+                  rows="8"
+                  value={inputValue.desc}
+                  onChange={onChangeHandler}
+                  maxLength="2000"
+                ></StDescInput>
+                {1 < inputValue.desc.length < 10 ? (
+                  <span style={{ color: "orange" }}>
+                    상품 설명을 10글자 이상 입력해주세요
+                  </span>
+                ) : null}
+              </Column>
+              <Row>
+                <span>혹시 카카오톡ID를 적으셨나요?</span>
+                <span>{inputValue.desc.length}/2000</span>
+              </Row>
+            </Column>
           </InputList>
           <InputList name="수량">
             <label htmlFor="">
@@ -428,6 +477,13 @@ const StPhotoInput = styled.input`
   opacity: 0;
   cursor: pointer;
   font-size: 0px;
+`;
+
+const StPhotoPreview = styled.div`
+  width: 202px;
+  height: 202px;
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
 
 const StPhotoInputGuide = styled.div`
