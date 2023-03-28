@@ -30,23 +30,26 @@ import {
 import DetailCard from "../components/Product/DetailCard";
 import DetailState from "../components/Product/DetailState";
 import { Row } from "../components/Flex";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { __getDetail } from "../redux/modules/detailSlice";
+import { __deleteDetail, __getDetail } from "../redux/modules/detailSlice";
 
 function Products() {
   const params = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { posts, isLoading, error } = useSelector((state) => state.detail);
 
   const pdId = params.pdId;
 
   console.log("posts = ", posts);
   useEffect(() => {
-    dispatch(__getDetail(+pdId));
+    dispatch(__getDetail(pdId));
 
     return () => {};
   }, [pdId]);
+
+  console.log("pdId = ", pdId);
 
   // 카테고리코드 => 한글 변환 switch 문
   const category = (cate) => {
@@ -87,6 +90,23 @@ function Products() {
                 <ProductInfo>
                   <ProductTitleBox>
                     <ProductTitle>{posts?.title}</ProductTitle>
+                    <button onClick={() => navigate(`/products/${pdId}/edit`)}>
+                      수정
+                    </button>
+                    <button
+                      onClick={() => {
+                        dispatch(
+                          __deleteDetail({
+                            pdId,
+                            next: () => {
+                              navigate("/");
+                            },
+                          })
+                        );
+                      }}
+                    >
+                      삭제
+                    </button>
                     <ProductPrice>{posts?.price}원</ProductPrice>
                   </ProductTitleBox>
                   <ProductStateBox>
