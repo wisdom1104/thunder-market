@@ -7,7 +7,6 @@ import { Column } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
 import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
-import { __uploadImg } from "../redux/modules/imageSlice";
 import { useDispatch, useSelector } from "react-redux";
 import imageCompression from "browser-image-compression";
 import { useParams } from "react-router";
@@ -92,7 +91,7 @@ function Edit() {
     const formData = new FormData();
     formData.append("image", imgData);
     console.log("formData =", formData.get("image"));
-    dispatch(__uploadImg(formData));
+    // dispatch(__uploadImg(formData));
   };
 
   const submitInputHandler = (e) => {
