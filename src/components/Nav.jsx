@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import LoginModal from "../features/auth/LoginModal";
-import LogoutModal from "./LogoutModal";
+import LogoutModal from "../features/auth/LogoutModal";
 
 function Nav() {
   let [isLoginModal, setIsLoginModal] = useState(false);

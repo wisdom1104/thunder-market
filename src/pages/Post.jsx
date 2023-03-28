@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
-import InputList from "../components/Post/InputList";
+import InputList from "../features/post/InputList";
 import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
-import FloaingFooter from "../components/Post/FloaingFooter";
+import FloaingFooter from "../features/post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
 import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
 import { useDispatch, useSelector } from "react-redux";

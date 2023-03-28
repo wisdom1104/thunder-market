@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
-import DeleteModal from "../components/Product/DeleteModal";
-import DoneModal from "../components/Product/DoneModal";
+import DeleteModal from "../features/detail/DeleteModal";
+import DoneModal from "../features/detail/DoneModal";
 import {
   ProductTitleBox,
   ProductInfo,
@@ -33,10 +33,10 @@ import {
   StoreBox,
   DescTitle,
   DescContent,
-} from "../components/Product/DetailStyle";
-import ThunderPayIcon from "../components/Product/ThunderPayIcon";
-import DetailCard from "../components/Product/DetailCard";
-import DetailState from "../components/Product/DetailState";
+} from "../features/detail/DetailStyle";
+import ThunderPayIcon from "../features/detail/ThunderPayIcon";
+import DetailCard from "../features/detail/DetailCard";
+import DetailState from "../features/detail/DetailState";
 import { Column, Row, RowCenter } from "../components/Flex";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";

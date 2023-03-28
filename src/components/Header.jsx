@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import MiniBox from "./MiniBox";
+import MiniBox from "../features/auth/MiniBox";
 
 function Header() {
   const navigate = useNavigate();

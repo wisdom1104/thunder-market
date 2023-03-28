@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { isLoginActions } from "../redux/modules/loginSlice";
+import { isLoginActions } from "../../redux/modules/loginSlice";
 
 function LogoutModal({ isLogoutModal, setIsLogoutModal }) {
   const dispatch = useDispatch();
