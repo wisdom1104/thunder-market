@@ -6,27 +6,41 @@ import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
 import FloaingFooter from "../components/Post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
-import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
+import { __getDetail, __editDetail } from "../redux/modules/detailSlice";
 import { useDispatch, useSelector } from "react-redux";
 import imageCompression from "browser-image-compression";
 import { cookies } from "../shared/cookies";
-import { useNavigate } from "react-router";
-import { async } from "q";
+import { useNavigate, useParams } from "react-router";
 
-function Post() {
+function Edit() {
   const dispatch = useDispatch();
+
+  const params = useParams();
+  const pdId = params.pdId;
+  console.log("pdId", pdId);
+
+  useEffect(() => {
+    dispatch(__getDetail(+pdId));
+
+    return () => {};
+  }, [pdId]);
+  const { posts } = useSelector((state) => state.detail);
+
+  console.log("posts", posts);
+
+  const jsonPost = JSON.stringify(posts);
   const newItem = {
     img: null,
-    title: "",
-    cateCode: "1",
-    used: false,
-    exchange: false,
-    price: "",
-    deliveryFee: false,
-    desc: "",
-    isDone: false,
-    quantity: "1",
-    thunderPay: false,
+    title: posts?.title,
+    cateCode: posts?.cateCode,
+    used: posts?.used,
+    exchange: posts?.exchange,
+    price: posts?.price.toLocaleString(),
+    deliveryFee: posts?.deliveryFee,
+    desc: posts?.desc,
+    isDone: posts?.isDone,
+    quantity: posts?.quantity,
+    thunderPay: posts?.thunderPay,
   };
 
   const token = cookies.get("token");
@@ -39,10 +53,11 @@ function Post() {
       alert("로그인이 필요합니다!");
       navigate("/");
     }
+    dispatch(__getDetail(pdId));
     preview();
 
     return () => {};
-  }, [inputValue.img]);
+  }, [inputValue?.img, jsonPost]);
 
   // 일반 텍스트 onChange 함수
   const onChangeHandler = (e) => {
@@ -53,10 +68,10 @@ function Post() {
   // comma 찍힌 숫자로 변경하는 함수
   const changeNumberHandler = (e) => {
     const { name, value } = e.target;
-    if (isNaN(Number(value.replaceAll(",", "")))) {
+    if (isNaN(Number(value?.replaceAll(",", "")))) {
       alert("숫자만 입력해주세요!");
     }
-    const removedCommaValue = Number(value.replaceAll(",", ""));
+    const removedCommaValue = Number(value?.replaceAll(",", ""));
     setInputValue({
       ...inputValue,
       [name]: removedCommaValue.toLocaleString(),
@@ -118,23 +133,22 @@ function Post() {
     reader.readAsDataURL(uploadedImg);
   };
 
-  const submitFile = {
-    title: inputValue.title,
-    cateCode: inputValue.cateCode,
-    used: inputValue.used,
-    exchange: inputValue.exchange,
-    // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
-    price: Number(inputValue.price.replaceAll(",", "")),
-    deliveryFee: inputValue.deliveryFee,
-    desc: inputValue.desc,
-    quantity: Number(inputValue.quantity),
-    thunderPay: inputValue.thunderPay,
-  };
-
-  console.log("submitFile", submitFile.price);
-  // 글 작성 함수
+  // 글 수정 함수
   const submitInputHandler = async (e) => {
     e.preventDefault();
+
+    const submitFile = {
+      title: inputValue?.title,
+      cateCode: inputValue?.cateCode,
+      used: inputValue?.used,
+      exchange: inputValue?.exchange,
+      // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
+      price: Number(inputValue.price?.replaceAll(",", "")),
+      deliveryFee: inputValue?.deliveryFee,
+      desc: inputValue?.desc,
+      quantity: Number(inputValue?.quantity),
+      thunderPay: inputValue?.thunderPay,
+    };
     // File이 아닌 데이터들을 json 형태로 변환하여 보내주기 위함
     const dto = new Blob([JSON.stringify(submitFile)], {
       type: "application/json",
@@ -152,8 +166,8 @@ function Post() {
     console.log("key : image", formData.get("image"));
     console.log("key : dto", formData.get("dto"));
 
-    await dispatch(__postDetail(formData));
-    navigate("/");
+    await dispatch(__editDetail({ formData: formData, pdId: pdId }));
+    navigate(`/products/${pdId}`);
   };
 
   // 카테고리코드 => 한글 변환 switch 문
@@ -238,13 +252,13 @@ function Post() {
                   value={inputValue.title}
                   placeholder="상품 제목을 입력해주세요."
                   onChange={onChangeHandler}
-                  // required
+                  required
                   maxLength="40"
                 />{" "}
-                <span>{inputValue.title.length}/40</span>
+                <span>{inputValue.title?.length}/40</span>
               </div>
               <div>
-                {inputValue.title.length < 2 ? (
+                {inputValue.title && inputValue.title.length < 2 ? (
                   <span style={{ color: "orange" }}>
                     상품명을 2자 이상 입력해주세요.
                   </span>
@@ -300,7 +314,6 @@ function Post() {
                 name="exchange"
                 value="false"
                 onChange={onChangeHandler}
-                // checked={}
               />
               교환불가
             </label>
@@ -513,4 +526,4 @@ const StDescInput = styled.textarea`
   } */
 `;
 
-export default Post;
+export default Edit;

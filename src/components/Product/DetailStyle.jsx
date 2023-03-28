@@ -15,7 +15,7 @@ export const ProductInfoBox = styled.div`
   padding: 30px 0px;
 `;
 
-export const ProductInfoImgBox = styled.div`
+export const ProductInfoImgBox = styled.img`
   margin-right: 40px;
   flex-shrink: 0;
   width: 430px;
@@ -201,9 +201,40 @@ export const BuyButton = styled.button`
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  cursor: pointer;
 `;
 
 export const RelatedItemBox = styled.div`
   display: flex;
   overflow: hidden;
+`;
+
+export const DescWrapper = styled.div`
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  font: inherit;
+  vertical-align: baseline;
+  width: 1024px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 100%;
+`;
+
+export const DescBox = styled.div`
+  border-right: 1px solid lightgray;
+  padding: 10px;
+`;
+export const StoreBox = styled.div`
+  padding: 10px;
+`;
+
+export const DescTitle = styled.div`
+  font-size: 25px;
+  margin: 15px;
+`;
+
+export const DescContent = styled.div`
+  margin: 15px;
 `;

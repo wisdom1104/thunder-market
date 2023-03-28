@@ -4,7 +4,7 @@ import axios from 'axios'
 import api from '../../axios/api'
 
 const initialState = {
-    details: [],
+    posts: [],
     isLoading: false,
     error: null,
   }
@@ -21,10 +21,30 @@ const initialState = {
 
   // 게시물 작성 함수
   export const __postDetail = createAsyncThunk('postDetail', async (payload, thunkAPI) => {
+    try {
+      
+      const response = await api.post(`/products`, payload, {
+        headers:{
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      console.log("response.data = ",response.data);
+
+      return thunkAPI.fulfillWithValue(payload)
+    } catch (error) {
+      console.log("error = ", error);
+      return thunkAPI.rejectWithValue(error)
+    }
+  })
+
+  // 게시물 삭제 함수
+  export const __deleteDetail = createAsyncThunk('deleteDetail', async (payload, thunkAPI) => {
     console.log("payload",payload);
 
     try {
-      const response = await api.post(`${process.env.REACT_APP_SERVER_URL}/products`, payload)
+      const {pdId} = payload
+      const response = await api.delete(`/products/${pdId}`)
+      alert("삭제되었습니다")
       console.log("response.data = ",response.data);
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
@@ -32,6 +52,40 @@ const initialState = {
       return thunkAPI.rejectWithValue(error)
     }
   })
+
+  // 게시물 구매완료
+
+  export const __doneDetail = createAsyncThunk('doneDetail', async (payload, thunkAPI) => {
+
+    try {
+      const {pdId} = payload
+      const response = await api.patch(`/products/${pdId}/done`)
+      console.log("response.data = ",response.data);
+      return thunkAPI.fulfillWithValue(payload)
+    } catch (error) {
+      console.log("error = ", error);
+      return thunkAPI.rejectWithValue(error)
+    }
+  })
+
+   // 게시물 수정 함수
+   export const __editDetail = createAsyncThunk('deleteDetail', async (payload, thunkAPI) => {
+
+    try {
+      const {pdId, formData} = payload
+      const response = await api.post(`/products/${pdId}`, formData,{
+        headers:{
+          'Content-Type': 'multipart/form-data',
+        }
+      })
+      console.log("response.data = ",response.data);
+      return thunkAPI.fulfillWithValue(payload)
+    } catch (error) {
+      console.log("error = ", error);
+      return thunkAPI.rejectWithValue(error)
+    }
+  })
+
 
 const detailSlice = createSlice({
   name: 'detail',
@@ -64,6 +118,22 @@ const detailSlice = createSlice({
             state.isLoading = false
             state.error = false
             state.posts = action.payload
+          },
+          [__postDetail.rejected]: (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+          },
+
+
+                    // 게시물 삭제 Reducer -------------------------------
+        [__deleteDetail.pending]: (state, action) => {
+            state.isLoading = true
+            state.error = false
+          },
+          [__deleteDetail.fulfilled]: (state, action) => {
+            state.isLoading = false
+            state.error = false
+            state.posts = []
           },
           [__postDetail.rejected]: (state, action) => {
             state.isLoading = false

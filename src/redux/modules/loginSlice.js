@@ -11,7 +11,7 @@ export const __signUp = createAsyncThunk("signUp", async (newUser, thunk) => {
     return thunk.fulfillWithValue(newUser);
   } catch (e) {
     const errorMsg = e.response.data.msg;
-    console.log(errorMsg);
+    // console.log(errorMsg);
     alert(`${errorMsg}`);
     return thunk.rejectWithValue(e);
   }
@@ -22,12 +22,18 @@ export const __checkUserEmail = createAsyncThunk(
   "users/checkUserEmail",
   async (payload, thunkAPI) => {
     try {
-      await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/register/check-email`,
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/signup/check-email`,
         payload
       );
+      const responseMsg = response.data.msg;
+      // console.log(responseMsg);
+      alert(`${responseMsg}`);
       return thunkAPI.fulfillWithValue(payload);
     } catch (error) {
+      const errorMsg = error.response.data.msg;
+      // console.log(errorMsg);
+      alert(`${errorMsg}`);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -37,13 +43,20 @@ export const __checkUserEmail = createAsyncThunk(
 export const __checkUserNick = createAsyncThunk(
   "users/checkUserNick",
   async (payload, thunkAPI) => {
+    // console.log(payload);
     try {
-      await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/register/check-nick`,
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/signup/check-nick`,
         payload
       );
+      const responseMsg = response.data.msg;
+      // console.log(response.data.msg);
+      alert(`${responseMsg}`);
       return thunkAPI.fulfillWithValue(payload);
     } catch (error) {
+      const errorMsg = error.response.data.msg;
+      // console.log(errorMsg);
+      alert(`${errorMsg}`);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -56,12 +69,15 @@ export const __logIn = createAsyncThunk("logIn", async (thisUser, thunk) => {
       `${process.env.REACT_APP_SERVER_URL}/login`,
       thisUser
     );
-    cookies.set("token", response.headers.authorization, { path: "/" });
+    cookies.set("token", response.headers.authorization, {
+      path: "/",
+      maxAge: 3540,
+    });
     return thunk.fulfillWithValue(thisUser);
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     const errorMsg = e.response.data.msg;
-    console.log(errorMsg);
+    // console.log(errorMsg);
     alert(`${errorMsg}`);
     return thunk.rejectWithValue(e);
   }
@@ -81,9 +97,9 @@ export const loginSlice = createSlice({
     logout(state) {
       state.isLogin = false;
       cookies.remove("token");
-      // cookies.remove("nickname");
     },
   },
+  extraReducers: {},
 });
 
 export const isLoginActions = loginSlice.actions;
