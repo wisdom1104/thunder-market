@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
@@ -26,7 +26,7 @@ function Signup() {
     // 공란 검사
 
     if (
-      user.email === "" ||
+      (possibleEmail && possibleNick && user.email === "") ||
       user.password === "" ||
       user.passwordCheck === "" ||
       user.nick === ""
@@ -68,14 +68,17 @@ function Signup() {
     const isValidNickname = /^[가-힣a-zA-Z0-9]{2,15}$/.test(nickname);
     if (isValidNickname) {
       setNicknameMsg(null);
+      return;
     } else {
       setNicknameMsg("닉네임은 2~15글자, 한글, 알파벳, 숫자만 입력 가능합니다");
+      return;
     }
   };
 
   // 닉네임 중복확인
   const [possibleNick, setPossibleNick] = useState(false);
-  const checkNickHandler = (nick) => {
+  const checkNickHandler = async (nick) => {
+    // console.log(possibleNick);
     dispatch(__checkUserNick(nick));
     setPossibleNick(true);
   };
@@ -272,6 +275,7 @@ const Btn = styled.button`
   color: rgb(255, 255, 255);
   text-align: center;
   border: none;
+  cursor: pointer;
 `;
 
 const ValidMsg = styled.p`
