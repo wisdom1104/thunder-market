@@ -94,12 +94,13 @@ export const useInput = (initialValue, action) => {
     navigate("/");
   };
 
-  return [
+  return {
     inputValue,
     onChangeHandler,
     fileInputHandler,
     submitInputHandler,
     changeNumberHandler,
     onCheckHandler,
-  ];
+    setInputValue,
+  };
 };

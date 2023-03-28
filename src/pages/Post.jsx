@@ -12,6 +12,7 @@ import imageCompression from "browser-image-compression";
 import { cookies } from "../shared/cookies";
 import { useNavigate } from "react-router";
 import { async } from "q";
+import { useCategory } from "../hooks/useCategory";
 
 function Post() {
   const dispatch = useDispatch();
@@ -31,16 +32,17 @@ function Post() {
 
   const token = cookies.get("token");
   const navigate = useNavigate();
-  const [inputValue, setInputValue] = useState(newItem);
+  // const [inputValue, setInputValue] = useState(newItem);
 
-  // const [
-  //   inputValue,
-  //   onChangeHandler,
-  //   submitInputHandler,
-  //   onCheckHandler,
-  //   changeNumberHandler,
-  //   fileInputHandler,
-  // ] = useInput(newItem, __postDetail);
+  const {
+    inputValue,
+    onChangeHandler,
+    submitInputHandler,
+    onCheckHandler,
+    changeNumberHandler,
+    fileInputHandler,
+    setInputValue,
+  } = useInput(newItem, __postDetail);
 
   console.log(inputValue);
 
@@ -52,65 +54,70 @@ function Post() {
     }
     preview();
 
-    return () => {};
+    return () => {
+      preview();
+    };
   }, [inputValue.img]);
 
+  console.log("inputValue", inputValue);
+  console.log(inputValue.img);
+
   // 일반 텍스트 onChange 함수
-  const onChangeHandler = (e) => {
-    const { name, value } = e.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
+  // const onChangeHandler = (e) => {
+  //   const { name, value } = e.target;
+  //   setInputValue({ ...inputValue, [name]: value });
+  // };
 
   // comma 찍힌 숫자로 변경하는 함수
-  const changeNumberHandler = (e) => {
-    const { name, value } = e.target;
-    if (isNaN(Number(value.replaceAll(",", "")))) {
-      alert("숫자만 입력해주세요!");
-    }
-    const removedCommaValue = Number(value.replaceAll(",", ""));
-    setInputValue({
-      ...inputValue,
-      [name]: removedCommaValue.toLocaleString(),
-    });
-  };
+  // const changeNumberHandler = (e) => {
+  //   const { name, value } = e.target;
+  //   if (isNaN(Number(value.replaceAll(",", "")))) {
+  //     alert("숫자만 입력해주세요!");
+  //   }
+  //   const removedCommaValue = Number(value.replaceAll(",", ""));
+  //   setInputValue({
+  //     ...inputValue,
+  //     [name]: removedCommaValue.toLocaleString(),
+  //   });
+  // };
 
   // 라디오 값 변경 함수
-  const onCheckHandler = (e) => {
-    const { name, value } = e.target;
+  // const onCheckHandler = (e) => {
+  //   const { name, value } = e.target;
 
-    setInputValue({
-      ...inputValue,
-      [name]: value == "true" ? "false" : "true",
-    });
-  };
+  //   setInputValue({
+  //     ...inputValue,
+  //     [name]: value == "true" ? "false" : "true",
+  //   });
+  // };
 
   // 이미지 파일 업로드 함수
-  const fileInputHandler = async (e) => {
-    const { name } = e.target;
-    const imgData = e.target.files[0];
+  // const fileInputHandler = async (e) => {
+  //   const { name } = e.target;
+  //   const imgData = e.target.files[0];
 
-    const compressImgHandler = (fileSrc) => {
-      const options = {
-        maxSizeMB: 5,
-        maxWidthOrHeight: 640,
-        useWebWorker: true,
-      };
-      try {
-        const compressedFile = imageCompression(fileSrc, options);
-        return compressedFile;
-      } catch (error) {
-        alert("이미지 파일이 너무 큽니다!");
-      }
-    };
+  //   const compressImgHandler = (fileSrc) => {
+  //     const options = {
+  //       maxSizeMB: 5,
+  //       maxWidthOrHeight: 640,
+  //       useWebWorker: true,
+  //     };
+  //     try {
+  //       const compressedFile = imageCompression(fileSrc, options);
+  //       return compressedFile;
+  //     } catch (error) {
+  //       alert("이미지 파일이 너무 큽니다!");
+  //     }
+  //   };
 
-    const compressedImg = await compressImgHandler(imgData);
-    // const readImg = reader.readAsDataURL(compressedImg);
-    console.log("compressedImg", compressedImg);
-    console.log("imgData", imgData);
-    // console.log(("readImg", readImg));
+  //   const compressedImg = await compressImgHandler(imgData);
+  //   // const readImg = reader.readAsDataURL(compressedImg);
+  //   console.log("compressedImg", compressedImg);
+  //   console.log("imgData", imgData);
+  //   // console.log(("readImg", readImg));
 
-    setInputValue({ ...inputValue, [name]: imgData });
-  };
+  //   setInputValue({ ...inputValue, [name]: imgData });
+  // };
 
   // 업로드한 이미지 미리보기
   const preview = () => {
@@ -118,77 +125,54 @@ function Post() {
     const previewBox = document.querySelector(".image-preview");
     const reader = new FileReader();
     if (!uploadedImg) {
-      return false;
+      return (previewBox.style.backgroundImage = null);
     }
 
     reader.onload = () => {
       //preview 백그라운드 이미지 바꿔주기
-      console.log("reader.result", reader.result);
       previewBox.style.backgroundImage = `url(${reader.result})`;
     };
 
     reader.readAsDataURL(uploadedImg);
   };
-
-  const deletePhotoHandler = () => {
+  const deletePhotoHandler = async () => {
     setInputValue({ ...inputValue, img: null });
   };
 
-  const submitFile = {
-    title: inputValue.title,
-    cateCode: inputValue.cateCode,
-    used: inputValue.used,
-    exchange: inputValue.exchange,
-    // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
-    price: Number(inputValue.price.replaceAll(",", "")),
-    deliveryFee: inputValue.deliveryFee,
-    desc: inputValue.desc,
-    quantity: Number(inputValue.quantity),
-    thunderPay: inputValue.thunderPay,
-  };
+  // const submitFile = {
+  //   title: inputValue.title,
+  //   cateCode: inputValue.cateCode,
+  //   used: inputValue.used,
+  //   exchange: inputValue.exchange,
+  //   // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
+  //   price: Number(inputValue.price.replaceAll(",", "")),
+  //   deliveryFee: inputValue.deliveryFee,
+  //   desc: inputValue.desc,
+  //   quantity: Number(inputValue.quantity),
+  //   thunderPay: inputValue.thunderPay,
+  // };
 
   // 글 작성 함수
-  const submitInputHandler = async (e) => {
-    e.preventDefault();
-    // File이 아닌 데이터들을 json 형태로 변환하여 보내주기 위함
-    const dto = new Blob([JSON.stringify(submitFile)], {
-      type: "application/json",
-    });
+  // const submitInputHandler = async (e) => {
+  //   e.preventDefault();
+  //   // File이 아닌 데이터들을 json 형태로 변환하여 보내주기 위함
+  //   const dto = new Blob([JSON.stringify(submitFile)], {
+  //     type: "application/json",
+  //   });
 
-    const formData = new FormData();
-    formData.append("image", inputValue.img);
-    formData.append("dto", dto);
+  //   const formData = new FormData();
+  //   formData.append("image", inputValue.img);
+  //   formData.append("dto", dto);
 
-    console.log("key : image", formData.get("image"));
-    console.log("key : dto", formData.get("dto"));
+  //   console.log("key : image", formData.get("image"));
+  //   console.log("key : dto", formData.get("dto"));
 
-    await dispatch(__postDetail(formData));
-    navigate("/");
-  };
+  //   await dispatch(__postDetail(formData));
+  //   navigate("/");
+  // };
 
-  // 카테고리코드 => 한글 변환 switch 문
-  const category = (cate) => {
-    switch (cate) {
-      case 1:
-        return "여성의류";
-      case 2:
-        return "남성의류";
-      case 3:
-        return "신발";
-      case 4:
-        return "가방";
-      case 5:
-        return "시계/주얼리";
-      case 6:
-        return "패션액세서리";
-      case 7:
-        return "디지털/가전";
-      case 8:
-        return "스포츠/레저";
-      default:
-        return null;
-    }
-  };
+  // 카테고리코드 => 한글 변환 커스텀훅
+  const { category } = useCategory();
 
   // 번개페이 한꺼번에 체크하기 위한 함수
   const [checkList, setCheckList] = useState([]);
@@ -218,7 +202,10 @@ function Post() {
                 />
               </StPhotoInputBox>
 
-              <StPhotoPreview className="image-preview">
+              <StPhotoPreview
+                className="image-preview"
+                // url={preview(inputValue.img)}
+              >
                 <button type="button" onClick={deletePhotoHandler}>
                   사진삭제
                 </button>
@@ -497,6 +484,9 @@ const StPhotoPreview = styled.div`
   height: 202px;
   background-repeat: no-repeat;
   background-size: cover;
+  ${({ url }) => {
+    return `background-image:url(${url})`;
+  }}
 `;
 
 const StPhotoInputGuide = styled.div`
