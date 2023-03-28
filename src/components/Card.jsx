@@ -50,9 +50,8 @@ function Card() {
                 }}
               >
                 <CardImg>
-                  <img
-                    style={{ width: "194px", height: "194px" }}
-                    src={`${item.img}`}
+                  <CardImgContent
+                    src={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${item.img}`}
                   />
                   {item.thunderPay ? (
                     <Thuner>
@@ -113,6 +112,12 @@ const StCard = styled.div`
   background: rgb(255, 255, 255);
   width: 194px;
   cursor: pointer;
+`;
+
+const CardImgContent = styled.img`
+  width: 155px;
+  height: 155px;
+  display: block;
 `;
 
 const CardImg = styled.div`
