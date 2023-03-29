@@ -46,6 +46,7 @@ import {
   __getDetail,
 } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
+import { useCategory } from "../hooks/useCategory";
 
 function Products() {
   const params = useParams();
@@ -57,8 +58,6 @@ function Products() {
 
   const nick = cookies.get("nick");
 
-  console.log("posts = ", posts);
-
   const pdId = params.pdId;
   const done = posts?.done;
 
@@ -68,31 +67,7 @@ function Products() {
     return () => {};
   }, [pdId, done]);
 
-  // const nick = cookies.get()
-
-  // 카테고리코드 => 한글 변환 switch 문
-  const category = (cate) => {
-    switch (cate) {
-      case 1:
-        return "여성의류";
-      case 2:
-        return "남성의류";
-      case 3:
-        return "신발";
-      case 4:
-        return "가방";
-      case 5:
-        return "시계/주얼리";
-      case 6:
-        return "패션액세서리";
-      case 7:
-        return "디지털/가전";
-      case 8:
-        return "스포츠/레저";
-      default:
-        return null;
-    }
-  };
+  const { category } = useCategory();
 
   if (isLoading) {
     return <div>로딩중...</div>;
