@@ -24,7 +24,8 @@ import {
   CateButtonBox,
   CateButton,
   CateButtonWrapper,
-} from "./PostStyle";
+} from "../features/post/PostStyle";
+import { usePreview } from "../hooks/usePreview";
 
 function Post() {
   const newItem = {
@@ -43,6 +44,7 @@ function Post() {
 
   const token = cookies.get("token");
   const navigate = useNavigate();
+  const { preview, previewUrl } = usePreview();
   // const [inputValue, setInputValue] = useState(newItem);
 
   const {
@@ -53,7 +55,9 @@ function Post() {
     changeNumberHandler,
     fileInputHandler,
     onSelectHandler,
-  } = useInput(newItem, __postDetail);
+    setInputValue,
+  } = useInput(newItem, __postDetail, null);
+  // const [previewUrl, setPreviewUrl] = useState(null);
 
   console.log(inputValue);
 
@@ -63,30 +67,12 @@ function Post() {
       alert("로그인이 필요합니다!");
       navigate("/");
     }
-    preview();
+    preview(inputValue.img);
 
     return () => {};
   }, [inputValue.img]);
 
   // 업로드한 이미지 미리보기
-  const preview = () => {
-    const uploadedImg = inputValue?.img;
-    const previewBox = document.querySelector(".image-preview");
-    const reader = new FileReader();
-    if (!uploadedImg) {
-      return (previewBox.style.backgroundImage = null);
-    }
-
-    reader.onload = () => {
-      //preview 백그라운드 이미지 바꿔주기
-      previewBox.style.backgroundImage = `url(${reader.result})`;
-    };
-
-    reader.readAsDataURL(uploadedImg);
-  };
-  // const deletePhotoHandler = async () => {
-  //   setInputValue({ ...inputValue, img: null });
-  // };
 
   // 카테고리코드 => 한글 변환 커스텀훅
   const { category } = useCategory();
@@ -99,6 +85,10 @@ function Post() {
     } else {
       return setCheckList([]);
     }
+  };
+
+  const deletePhotoHandler = () => {
+    setInputValue({ ...inputValue, img: null });
   };
 
   return (
@@ -118,15 +108,13 @@ function Post() {
                   onChange={fileInputHandler}
                 />
               </StPhotoInputBox>
-
-              <StPhotoPreview
-                className="image-preview"
-                // url={preview(inputValue.img)}
-              >
-                {/* <button type="button" onClick={deletePhotoHandler}>
-                  사진삭제
-                </button> */}
-              </StPhotoPreview>
+              {inputValue.img ? (
+                <StPhotoPreview url={`${previewUrl}`}>
+                  <button type="button" onClick={deletePhotoHandler}>
+                    삭제
+                  </button>
+                </StPhotoPreview>
+              ) : null}
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
