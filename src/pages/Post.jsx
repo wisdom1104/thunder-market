@@ -83,11 +83,6 @@ function Post() {
     setInputValue({ ...inputValue, img: null });
   };
 
-  console.log("중고여부", inputValue.used);
-  console.log("교환여부", inputValue.exchange);
-  console.log("번개페이", inputValue.thunderPay);
-  console.log("운포", inputValue.deliveryFee);
-
   return (
     <Wrapper>
       <Layout>
