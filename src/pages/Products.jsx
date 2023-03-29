@@ -59,8 +59,6 @@ function Products() {
   const pdId = params.pdId;
   const done = posts?.done;
 
-  console.log(posts);
-
   useEffect(() => {
     dispatch(__getDetail(pdId));
 
