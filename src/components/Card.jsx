@@ -15,10 +15,7 @@ function Card() {
   const card = JSON.stringify(cards);
 
   useEffect(() => {
-    if (cards.length === 0) {
-      dispatch(__getCards());
-      return;
-    }
+    dispatch(__getCards());
   }, [card]);
 
   // useEffect(() => {
