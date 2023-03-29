@@ -4,26 +4,28 @@ import styled from "styled-components";
 import { __getCards } from "../redux/modules/cardSlice";
 import { useNavigate } from "react-router-dom";
 import PhotoSlide from "./PhotoSlide";
-import { useInView } from "react-intersection-observer";
+// import { useInView } from "react-intersection-observer";
 
 function Card() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [ref, inView] = useInView();
+  // const [ref, inView] = useInView();
   const { isLoading, error, cards } = useSelector((state) => state.cards);
+
+  const card = JSON.stringify(cards);
 
   useEffect(() => {
     if (cards.length === 0) {
       dispatch(__getCards());
       return;
     }
-  }, []);
+  }, [card]);
 
-  useEffect(() => {
-    if (cards.length !== 0 && inView) {
-      dispatch(__getCards());
-    }
-  }, [inView]);
+  // useEffect(() => {
+  //   if (cards.length !== 0 && inView) {
+  //     dispatch(__getCards());
+  //   }
+  // }, [inView]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -31,14 +33,13 @@ function Card() {
   if (error) {
     return <div>{error.message}</div>;
   }
-  // console.log(cards);
   return (
     <CardSection>
       <PhotoSlide />
       <Title>오늘의 상품 추천</Title>
       <CardBox>
         {cards.length === 0 ? (
-          <div>No cards to display</div>
+          <div>상품이 없습니다.</div>
         ) : (
           cards.map((item) => {
             return (

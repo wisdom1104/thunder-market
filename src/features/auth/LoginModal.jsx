@@ -1,28 +1,19 @@
-import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { isLoginActions, __logIn } from "../../redux/modules/loginSlice";
+import { __kakaologIn } from "../../redux/modules/loginSlice";
 import { Column } from "../../components/Flex";
+import { useLogin } from "../../hooks/useLogin";
 
 function LoginModal({ isLoginModal, setIsLoginModal }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
+  // 로그인
+  const [user, setUser, submitHandler] = useLogin({
+    isLoginModal,
+    setIsLoginModal,
   });
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    const response = await dispatch(__logIn(user));
-    if (response.type === "logIn/fulfilled") {
-      dispatch(isLoginActions.login());
-      alert("로그인 되었습니다.");
-      setIsLoginModal(!isLoginModal);
-    }
-  };
 
   return (
     <>
@@ -41,12 +32,15 @@ function LoginModal({ isLoginModal, setIsLoginModal }) {
                   <SubTitle>간편하게 중고거래 시작하기</SubTitle>
                   <CacaoLogin>
                     <CacaoBtn
-                      onClick={() =>
-                        window.open(
-                          "https://kauth.kakao.com/oauth/authorize?client_id=8556f063804f3a560b2aa9a26c924279&redirect_uri=http://3.35.117.161/kakao/callback&response_type=code",
-                          "_blank"
-                        )
-                      }
+                      onClick={() => {
+                        // window.open(
+                        //   "https://kauth.kakao.com/oauth/authorize?client_id=8556f063804f3a560b2aa9a26c924279&redirect_uri=http://43.201.36.104/kakao/callback&response_type=code",
+                        //   "_blank"
+                        // )
+
+                        dispatch(__kakaologIn());
+                        // navigate("/");
+                      }}
                     >
                       <CacaoImg src="https://m.bunjang.co.kr/pc-static/resource/7bf83f72cf54461af573.png" />
                       카카오로 이용하기

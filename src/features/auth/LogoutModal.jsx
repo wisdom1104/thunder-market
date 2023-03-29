@@ -8,7 +8,6 @@ function LogoutModal({ isLogoutModal, setIsLogoutModal }) {
 
   const logout = () => {
     dispatch(isLoginActions.logout());
-    // alert("로그아웃 되었습니다.");
     setIsLogoutModal(!isLogoutModal);
   };
 
@@ -16,7 +15,7 @@ function LogoutModal({ isLogoutModal, setIsLogoutModal }) {
     <>
       <div>
         {
-          isLogoutModal == true ? (
+          isLogoutModal === true ? (
             <ModalBackground
               onClick={() => {
                 setIsLogoutModal(!isLogoutModal);
