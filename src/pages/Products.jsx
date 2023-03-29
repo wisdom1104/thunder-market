@@ -40,11 +40,7 @@ import DetailState from "../features/detail/DetailState";
 import { Column, Row, RowCenter } from "../components/Flex";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  __deleteDetail,
-  __doneDetail,
-  __getDetail,
-} from "../redux/modules/detailSlice";
+import { __getDetail } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
 import { useCategory } from "../hooks/useCategory";
 
