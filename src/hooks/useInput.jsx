@@ -4,7 +4,7 @@ import imageCompression from "browser-image-compression";
 import { useNavigate } from "react-router-dom";
 import { useCategory } from "./useCategory";
 
-export const useInput = (initialValue, action) => {
+export const useInput = (initialValue, action, id) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState(initialValue);
@@ -102,7 +102,7 @@ export const useInput = (initialValue, action) => {
     console.log("key : image", formData.get("image"));
     console.log("key : dto", formData.get("dto"));
 
-    await dispatch(action(formData));
+    await dispatch(action({ formData, pdId: id }));
     navigate("/");
   };
 
