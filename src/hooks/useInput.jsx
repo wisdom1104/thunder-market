@@ -65,11 +65,6 @@ export const useInput = (initialValue, action, id) => {
     };
 
     const compressedImg = await compressImgHandler(imgData);
-    // const readImg = reader.readAsDataURL(compressedImg);
-    console.log("compressedImg", compressedImg);
-    console.log("imgData", imgData);
-    // console.log(("readImg", readImg));
-    console.log("이미지 압축", compressedImg);
 
     setInputValue({ ...inputValue, [name]: compressedImg });
   };
@@ -98,9 +93,6 @@ export const useInput = (initialValue, action, id) => {
     const formData = new FormData();
     formData.append("image", inputValue.img);
     formData.append("dto", dto);
-
-    console.log("key : image", formData.get("image"));
-    console.log("key : dto", formData.get("dto"));
 
     await dispatch(action({ formData, pdId: id }));
     navigate("/");

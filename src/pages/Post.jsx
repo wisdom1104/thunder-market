@@ -44,8 +44,9 @@ function Post() {
 
   const token = cookies.get("token");
   const navigate = useNavigate();
+
+  // 업로드한 이미지 미리보기 커스텀훅
   const { preview, previewUrl } = usePreview();
-  // const [inputValue, setInputValue] = useState(newItem);
 
   const {
     inputValue,
@@ -57,9 +58,6 @@ function Post() {
     onSelectHandler,
     setInputValue,
   } = useInput(newItem, __postDetail, null);
-  // const [previewUrl, setPreviewUrl] = useState(null);
-
-  console.log(inputValue);
 
   //이미지 업로드시 화면 재렌더링을 위한 useEffect
   useEffect(() => {
@@ -71,8 +69,6 @@ function Post() {
 
     return () => {};
   }, [inputValue.img]);
-
-  // 업로드한 이미지 미리보기
 
   // 카테고리코드 => 한글 변환 커스텀훅
   const { category } = useCategory();
@@ -94,7 +90,6 @@ function Post() {
   return (
     <Wrapper>
       <Layout>
-        <div>카테고리</div>
         <div>기본정보</div>
         <PostList id="post-product" onSubmit={submitInputHandler}>
           <InputList name="상품이미지" important>
@@ -145,7 +140,7 @@ function Post() {
                   onChange={onChangeHandler}
                   // required
                   maxLength="40"
-                />{" "}
+                />
                 <span>{inputValue.title.length}/40</span>
               </div>
               <div>
@@ -235,7 +230,6 @@ function Post() {
                 name="exchange"
                 value="false"
                 onChange={onChangeHandler}
-                // checked={}
               />
               교환불가
             </label>
@@ -268,7 +262,6 @@ function Post() {
                 name="deliveryFee"
                 onChange={(e) => onCheckHandler(e)}
                 value={inputValue.deliveryFee}
-                // checked={inputValue.deliveryFee == "true"}
               />
               배송비포함
             </label>
