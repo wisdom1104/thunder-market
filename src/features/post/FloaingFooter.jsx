@@ -5,15 +5,7 @@ function FloaingFooter({ submitInputHandler }) {
   return (
     <StFooter>
       <StFooterBox>
-        <StButton
-          type="submit"
-          form="post-product"
-          // onClick={(e) => {
-          //   console.log("버튼 눌렸어여!");
-          //   e.preventDefault();
-          //   submitInputHandler(e);
-          // }}
-        />
+        <StButton type="submit" form="post-product" />
       </StFooterBox>
     </StFooter>
   );

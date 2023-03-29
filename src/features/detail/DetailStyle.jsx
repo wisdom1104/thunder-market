@@ -210,7 +210,7 @@ export const RelatedItemBox = styled.div`
 `;
 
 export const DescWrapper = styled.div`
-  margin: 0px;
+  margin: 20px 0px 0px 0px;
   padding: 0px;
   border: 0px;
   font: inherit;

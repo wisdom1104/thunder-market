@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import DeleteModal from "../features/detail/DeleteModal";
@@ -43,6 +42,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { __getDetail } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
 import { useCategory } from "../hooks/useCategory";
+import DetailTitle from "../features/detail/DetailTitle";
+import DetailButton from "../features/detail/DetailButton";
 
 function Products() {
   const params = useParams();
@@ -53,16 +54,20 @@ function Products() {
   let [isDoneModal, setIsDoneModal] = useState(false);
 
   const nick = cookies.get("nick");
+  const jsonPosts = JSON.stringify(posts);
 
   const pdId = params.pdId;
   const done = posts?.done;
+
+  console.log(posts);
 
   useEffect(() => {
     dispatch(__getDetail(pdId));
 
     return () => {};
-  }, [pdId, done]);
+  }, [pdId, jsonPosts]);
 
+  // 카테고리 분류 커스텀 훅
   const { category } = useCategory();
 
   if (isLoading) {
@@ -85,22 +90,20 @@ function Products() {
                     <ProductTitle>{posts?.title}</ProductTitle>
                     {nick == posts?.nick ? (
                       <>
-                        {" "}
-                        <button
+                        <DetailButton
                           onClick={() => navigate(`/products/${pdId}/edit`)}
                         >
                           수정
-                        </button>
-                        <button
+                        </DetailButton>
+                        <DetailButton
                           onClick={() => {
                             setIsDeleteModal(!isDeleteModal);
                           }}
                         >
                           삭제
-                        </button>
+                        </DetailButton>
                       </>
                     ) : null}
-
                     <Row>
                       <ProductPrice>
                         {posts?.price?.toLocaleString()}원
@@ -150,7 +153,7 @@ function Products() {
                       </ProductReport>
                     </ProductStateLikeWrapper>
                     <DetailState name="상품상태">
-                      {posts?.used ? "새상품" : "중고상품"}
+                      {posts?.used ? "중고상품" : "새상품"}
                     </DetailState>
                     <DetailState name="교환여부">
                       {posts?.exchange ? "교환가능" : "교환불가능"}
@@ -209,20 +212,21 @@ function Products() {
             </ProductInfoContentWrapper>
           </ProductInfoBox>
         </ProductInfoWrapper>
-
-        <>
-          연관상품
-          <RelatedItemBox>
-            {posts?.productList?.map((item) => (
-              <DetailCard
-                key={item.id}
-                title={item.title}
-                pdId={item.id}
-                img={item.img}
-              />
-            ))}
-          </RelatedItemBox>
-        </>
+        <DescWrapper>
+          <Column>
+            <DetailTitle>연관상품</DetailTitle>
+            <RelatedItemBox>
+              {posts?.productList?.map((item) => (
+                <DetailCard
+                  key={item.id}
+                  title={item.title}
+                  pdId={item.id}
+                  img={item.img}
+                />
+              ))}
+            </RelatedItemBox>
+          </Column>
+        </DescWrapper>
         <DescWrapper>
           <DescBox>
             <Column>
@@ -230,7 +234,9 @@ function Products() {
               <DescContent>{posts?.desc}</DescContent>
             </Column>
           </DescBox>
-          <StoreBox>상점정보</StoreBox>
+          <StoreBox>
+            <DescTitle>상점정보</DescTitle>
+          </StoreBox>
         </DescWrapper>
         <div>광고</div>
       </Layout>

@@ -48,15 +48,14 @@ const initialState = {
   })
 
   // 게시물 구매완료
-
   export const __doneDetail = createAsyncThunk('doneDetail', async (payload, thunkAPI) => {
 
     try {
       const {pdId} = payload
       await api.patch(`/products/${pdId}/done`)
-      return thunkAPI.fulfillWithValue(payload)
+      return thunkAPI.fulfillWithValue(pdId)
     } catch (error) {
-      return thunkAPI.rejectWithValue(error)
+    return thunkAPI.rejectWithValue(error)
     }
   })
 
@@ -125,10 +124,27 @@ const detailSlice = createSlice({
             state.error = false
             state.posts = []
           },
-          [__postDetail.rejected]: (state, action) => {
+          [__deleteDetail.rejected]: (state, action) => {
             state.isLoading = false
             state.error = action.payload
           },
+
+                    // 게시물 완료 Reducer -------------------------------
+        [__doneDetail.pending]: (state, action) => {
+          state.isLoading = true
+          state.error = false
+        },
+        [__doneDetail.fulfilled]: (state, action) => {
+          state.isLoading = false
+          state.error = false
+          state.posts = {...state.posts, isDone:true}
+          alert("구매완료되었습니다!");
+        },
+        [__doneDetail.rejected]: (state, action) => {
+          state.isLoading = false
+          state.error = action.payload
+          alert("본인의 상품은 구매하실 수 없습니다!");  
+        },
 
 
 }})

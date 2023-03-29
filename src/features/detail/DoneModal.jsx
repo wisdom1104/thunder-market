@@ -6,14 +6,12 @@ import { __doneDetail } from "../../redux/modules/detailSlice";
 
 function DoneModal({ isDoneModal, setIsDoneModal, pdId }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const doneProductHandler = async () => {
-    dispatch(
-      await __doneDetail({
-        pdId,
-      })
-    );
+    dispatch(__doneDetail({ pdId }));
     setIsDoneModal(!isDoneModal);
+    navigate(`/products/${pdId}`);
   };
 
   return (
