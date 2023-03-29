@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import DeleteModal from "../features/detail/DeleteModal";
@@ -55,15 +54,18 @@ function Products() {
   let [isDoneModal, setIsDoneModal] = useState(false);
 
   const nick = cookies.get("nick");
+  const jsonPosts = JSON.stringify(posts);
 
   const pdId = params.pdId;
   const done = posts?.done;
+
+  console.log(posts);
 
   useEffect(() => {
     dispatch(__getDetail(pdId));
 
     return () => {};
-  }, [pdId, done]);
+  }, [pdId, jsonPosts]);
 
   // 카테고리 분류 커스텀 훅
   const { category } = useCategory();
@@ -151,7 +153,7 @@ function Products() {
                       </ProductReport>
                     </ProductStateLikeWrapper>
                     <DetailState name="상품상태">
-                      {posts?.used ? "새상품" : "중고상품"}
+                      {posts?.used ? "중고상품" : "새상품"}
                     </DetailState>
                     <DetailState name="교환여부">
                       {posts?.exchange ? "교환가능" : "교환불가능"}
