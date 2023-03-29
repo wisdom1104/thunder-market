@@ -2,29 +2,34 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import imageCompression from "browser-image-compression";
 import { useNavigate } from "react-router-dom";
+import { useCategory } from "./useCategory";
 
 export const useInput = (initialValue, action) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState(initialValue);
 
+  // 일반 텍스트 onChange 함수
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
     setInputValue({ ...inputValue, [name]: value });
   };
 
+  // comma 찍힌 숫자로 변경하는 함수
   const changeNumberHandler = (e) => {
     const { name, value } = e.target;
+    const removedCommaValue = Number(value.replaceAll(",", ""));
     if (isNaN(Number(value.replaceAll(",", "")))) {
       alert("숫자만 입력해주세요!");
     }
-    const removedCommaValue = Number(value.replaceAll(",", ""));
+
     setInputValue({
       ...inputValue,
       [name]: removedCommaValue.toLocaleString(),
     });
   };
 
+  // 라디오 값 변경 함수
   const onCheckHandler = (e) => {
     const { name, value } = e.target;
 
@@ -34,6 +39,13 @@ export const useInput = (initialValue, action) => {
     });
   };
 
+  // 카테고리 선택 함수
+  const onSelectHandler = (e) => {
+    const { value } = e.target;
+    setInputValue({ ...inputValue, cateCode: value });
+  };
+
+  // 이미지 파일 업로드 함수
   const fileInputHandler = async (e) => {
     const { name } = e.target;
     const imgData = e.target.files[0];
@@ -102,5 +114,6 @@ export const useInput = (initialValue, action) => {
     changeNumberHandler,
     onCheckHandler,
     setInputValue,
+    onSelectHandler,
   };
 };
