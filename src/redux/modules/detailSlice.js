@@ -22,49 +22,40 @@ const initialState = {
   // 게시물 작성 함수
   export const __postDetail = createAsyncThunk('postDetail', async (payload, thunkAPI) => {
     try {
-      
-      const response = await api.post(`/products`, payload, {
+      const {formData} = payload
+      await api.post(`/products`, formData, {
         headers:{
           'Content-Type': 'multipart/form-data',
         }
       })
-      console.log("response.data = ",response.data);
 
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
-      console.log("error = ", error);
       return thunkAPI.rejectWithValue(error)
     }
   })
 
   // 게시물 삭제 함수
   export const __deleteDetail = createAsyncThunk('deleteDetail', async (payload, thunkAPI) => {
-    console.log("payload",payload);
-
     try {
       const {pdId} = payload
-      const response = await api.delete(`/products/${pdId}`)
+      await api.delete(`/products/${pdId}`)
       alert("삭제되었습니다")
-      console.log("response.data = ",response.data);
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
-      console.log("error = ", error);
       return thunkAPI.rejectWithValue(error)
     }
   })
 
   // 게시물 구매완료
-
   export const __doneDetail = createAsyncThunk('doneDetail', async (payload, thunkAPI) => {
 
     try {
       const {pdId} = payload
-      const response = await api.patch(`/products/${pdId}/done`)
-      console.log("response.data = ",response.data);
-      return thunkAPI.fulfillWithValue(payload)
+      await api.patch(`/products/${pdId}/done`)
+      return thunkAPI.fulfillWithValue(pdId)
     } catch (error) {
-      console.log("error = ", error);
-      return thunkAPI.rejectWithValue(error)
+    return thunkAPI.rejectWithValue(error)
     }
   })
 
@@ -73,15 +64,13 @@ const initialState = {
 
     try {
       const {pdId, formData} = payload
-      const response = await api.post(`/products/${pdId}`, formData,{
+      await api.post(`/products/${pdId}`, formData,{
         headers:{
           'Content-Type': 'multipart/form-data',
         }
       })
-      console.log("response.data = ",response.data);
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
-      console.log("error = ", error);
       return thunkAPI.rejectWithValue(error)
     }
   })
@@ -135,10 +124,27 @@ const detailSlice = createSlice({
             state.error = false
             state.posts = []
           },
-          [__postDetail.rejected]: (state, action) => {
+          [__deleteDetail.rejected]: (state, action) => {
             state.isLoading = false
             state.error = action.payload
           },
+
+                    // 게시물 완료 Reducer -------------------------------
+        [__doneDetail.pending]: (state, action) => {
+          state.isLoading = true
+          state.error = false
+        },
+        [__doneDetail.fulfilled]: (state, action) => {
+          state.isLoading = false
+          state.error = false
+          state.posts = {...state.posts, isDone:true}
+          alert("구매완료되었습니다!");
+        },
+        [__doneDetail.rejected]: (state, action) => {
+          state.isLoading = false
+          state.error = action.payload
+          alert("본인의 상품은 구매하실 수 없습니다!");  
+        },
 
 
 }})

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
-import DeleteModal from "../components/Product/DeleteModal";
-import DoneModal from "../components/Product/DoneModal";
+import DeleteModal from "../features/detail/DeleteModal";
+import DoneModal from "../features/detail/DoneModal";
 import {
   ProductTitleBox,
   ProductInfo,
@@ -33,18 +32,18 @@ import {
   StoreBox,
   DescTitle,
   DescContent,
-} from "../components/Product/DetailStyle";
-import ThunderPayIcon from "../components/Product/ThunderPayIcon";
-import DetailCard from "../components/Product/DetailCard";
-import DetailState from "../components/Product/DetailState";
+} from "../features/detail/DetailStyle";
+import ThunderPayIcon from "../features/detail/ThunderPayIcon";
+import DetailCard from "../features/detail/DetailCard";
+import DetailState from "../features/detail/DetailState";
 import { Column, Row, RowCenter } from "../components/Flex";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  __deleteDetail,
-  __doneDetail,
-  __getDetail,
-} from "../redux/modules/detailSlice";
+import { __getDetail } from "../redux/modules/detailSlice";
+import { cookies } from "../shared/cookies";
+import { useCategory } from "../hooks/useCategory";
+import DetailTitle from "../features/detail/DetailTitle";
+import DetailButton from "../features/detail/DetailButton";
 
 function Products() {
   const params = useParams();
@@ -54,7 +53,8 @@ function Products() {
   let [isDeleteModal, setIsDeleteModal] = useState(false);
   let [isDoneModal, setIsDoneModal] = useState(false);
 
-  console.log("posts = ", posts);
+  const nick = cookies.get("nick");
+  const jsonPosts = JSON.stringify(posts);
 
   const pdId = params.pdId;
   const done = posts?.done;
@@ -63,31 +63,10 @@ function Products() {
     dispatch(__getDetail(pdId));
 
     return () => {};
-  }, [pdId, done]);
+  }, [pdId, jsonPosts]);
 
-  // 카테고리코드 => 한글 변환 switch 문
-  const category = (cate) => {
-    switch (cate) {
-      case 1:
-        return "여성의류";
-      case 2:
-        return "남성의류";
-      case 3:
-        return "신발";
-      case 4:
-        return "가방";
-      case 5:
-        return "시계/주얼리";
-      case 6:
-        return "패션액세서리";
-      case 7:
-        return "디지털/가전";
-      case 8:
-        return "스포츠/레저";
-      default:
-        return null;
-    }
-  };
+  // 카테고리 분류 커스텀 훅
+  const { category } = useCategory();
 
   if (isLoading) {
     return <div>로딩중...</div>;
@@ -107,18 +86,26 @@ function Products() {
                 <ProductInfo>
                   <ProductTitleBox>
                     <ProductTitle>{posts?.title}</ProductTitle>
-                    <button onClick={() => navigate(`/products/${pdId}/edit`)}>
-                      수정
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsDeleteModal(!isDeleteModal);
-                      }}
-                    >
-                      삭제
-                    </button>
+                    {nick == posts?.nick ? (
+                      <>
+                        <DetailButton
+                          onClick={() => navigate(`/products/${pdId}/edit`)}
+                        >
+                          수정
+                        </DetailButton>
+                        <DetailButton
+                          onClick={() => {
+                            setIsDeleteModal(!isDeleteModal);
+                          }}
+                        >
+                          삭제
+                        </DetailButton>
+                      </>
+                    ) : null}
                     <Row>
-                      <ProductPrice>{posts?.price}원</ProductPrice>
+                      <ProductPrice>
+                        {posts?.price?.toLocaleString()}원
+                      </ProductPrice>
                       {posts?.thunderPay ? <ThunderPayIcon /> : null}
                     </Row>
                   </ProductTitleBox>
@@ -164,7 +151,7 @@ function Products() {
                       </ProductReport>
                     </ProductStateLikeWrapper>
                     <DetailState name="상품상태">
-                      {posts?.used ? "새상품" : "중고상품"}
+                      {posts?.used ? "중고상품" : "새상품"}
                     </DetailState>
                     <DetailState name="교환여부">
                       {posts?.exchange ? "교환가능" : "교환불가능"}
@@ -223,20 +210,21 @@ function Products() {
             </ProductInfoContentWrapper>
           </ProductInfoBox>
         </ProductInfoWrapper>
-
-        <>
-          연관상품
-          <RelatedItemBox>
-            {posts?.productList.map((item) => (
-              <DetailCard
-                key={item.id}
-                title={item.title}
-                pdId={item.id}
-                img={item.img}
-              />
-            ))}
-          </RelatedItemBox>
-        </>
+        <DescWrapper>
+          <Column>
+            <DetailTitle>연관상품</DetailTitle>
+            <RelatedItemBox>
+              {posts?.productList?.map((item) => (
+                <DetailCard
+                  key={item.id}
+                  title={item.title}
+                  pdId={item.id}
+                  img={item.img}
+                />
+              ))}
+            </RelatedItemBox>
+          </Column>
+        </DescWrapper>
         <DescWrapper>
           <DescBox>
             <Column>
@@ -244,7 +232,9 @@ function Products() {
               <DescContent>{posts?.desc}</DescContent>
             </Column>
           </DescBox>
-          <StoreBox>상점정보</StoreBox>
+          <StoreBox>
+            <DescTitle>상점정보</DescTitle>
+          </StoreBox>
         </DescWrapper>
         <div>광고</div>
       </Layout>

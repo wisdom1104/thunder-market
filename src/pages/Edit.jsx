@@ -1,41 +1,42 @@
 import React, { useEffect, useState } from "react";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
-import InputList from "../components/Post/InputList";
+import InputList from "../features/post/InputList";
 import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
-import FloaingFooter from "../components/Post/FloaingFooter";
+import FloaingFooter from "../features/post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
-import { __getDetail, __editDetail } from "../redux/modules/detailSlice";
-import { useDispatch, useSelector } from "react-redux";
-import imageCompression from "browser-image-compression";
+import { __editDetail } from "../redux/modules/detailSlice";
+import { useSelector } from "react-redux";
 import { cookies } from "../shared/cookies";
 import { useNavigate, useParams } from "react-router";
+import {
+  PostList,
+  StPhotoInputWrapper,
+  StPhotoInputGuide,
+  StPhotoPreview,
+  StPhotoInputBox,
+  StPhotoInput,
+  StDescInput,
+  CateButtonBox,
+  CateButton,
+  CateButtonWrapper,
+} from "../features/post/PostStyle";
+import { useCategory } from "../hooks/useCategory";
+import { usePreview } from "../hooks/usePreview";
 
 function Edit() {
-  const dispatch = useDispatch();
-
   const params = useParams();
   const pdId = params.pdId;
-  console.log("pdId", pdId);
-
-  useEffect(() => {
-    dispatch(__getDetail(+pdId));
-
-    return () => {};
-  }, [pdId]);
-  const { posts } = useSelector((state) => state.detail);
-
-  console.log("posts", posts);
-
-  const jsonPost = JSON.stringify(posts);
+  // 이전 페이지에서 리덕스 스토어에 저장된 값 그대로 가져옴
+  const { posts, isLoading } = useSelector((state) => state.detail);
   const newItem = {
     img: null,
     title: posts?.title,
     cateCode: posts?.cateCode,
     used: posts?.used,
     exchange: posts?.exchange,
-    price: posts?.price.toLocaleString(),
+    price: posts?.price?.toLocaleString(),
     deliveryFee: posts?.deliveryFee,
     desc: posts?.desc,
     isDone: posts?.isDone,
@@ -45,154 +46,37 @@ function Edit() {
 
   const token = cookies.get("token");
   const navigate = useNavigate();
-  const [inputValue, setInputValue] = useState(newItem);
 
-  //이미지 업로드시 화면 재렌더링을 위한 useEffect
+  // 기존 이미지 state 설정
+  const [exPhoto, setExPhoto] = useState(posts?.img);
+
+  // 입력 폼 커스텀 훅
+  const {
+    inputValue,
+    onChangeHandler,
+    submitInputHandler,
+    onCheckHandler,
+    changeNumberHandler,
+    fileInputHandler,
+    onSelectHandler,
+    setInputValue,
+  } = useInput(newItem, __editDetail, pdId);
+
+  // 이미지 미리보기 커스텀 훅
+  const { preview, previewUrl } = usePreview();
+
   useEffect(() => {
     if (!token) {
       alert("로그인이 필요합니다!");
       navigate("/");
     }
-    dispatch(__getDetail(pdId));
-    preview();
+    preview(inputValue.img);
 
     return () => {};
-  }, [inputValue?.img, jsonPost]);
-
-  // 일반 텍스트 onChange 함수
-  const onChangeHandler = (e) => {
-    const { name, value } = e.target;
-    setInputValue({ ...inputValue, [name]: value });
-  };
-
-  // comma 찍힌 숫자로 변경하는 함수
-  const changeNumberHandler = (e) => {
-    const { name, value } = e.target;
-    if (isNaN(Number(value?.replaceAll(",", "")))) {
-      alert("숫자만 입력해주세요!");
-    }
-    const removedCommaValue = Number(value?.replaceAll(",", ""));
-    setInputValue({
-      ...inputValue,
-      [name]: removedCommaValue.toLocaleString(),
-    });
-  };
-
-  // 라디오 값 변경 함수
-  const onCheckHandler = (e) => {
-    const { name, value } = e.target;
-
-    setInputValue({
-      ...inputValue,
-      [name]: value == "true" ? "false" : "true",
-    });
-  };
-
-  const reader = new FileReader();
-
-  // 이미지 파일 업로드 함수
-  const fileInputHandler = async (e) => {
-    const { name } = e.target;
-    const imgData = e.target.files[0];
-
-    const compressImgHandler = (fileSrc) => {
-      const options = {
-        maxSizeMB: 5,
-        maxWidthOrHeight: 640,
-        useWebWorker: true,
-      };
-      try {
-        const compressedFile = imageCompression(fileSrc, options);
-        return compressedFile;
-      } catch (error) {
-        alert("이미지 파일이 너무 큽니다!");
-      }
-    };
-
-    const compressedImg = await compressImgHandler(imgData);
-    // const readImg = reader.readAsDataURL(compressedImg);
-    console.log("compressedImg", compressedImg);
-    console.log("imgData", imgData);
-    // console.log(("readImg", readImg));
-
-    setInputValue({ ...inputValue, [name]: imgData });
-  };
-
-  // 업로드한 이미지 미리보기
-  const preview = () => {
-    const uploadedImg = inputValue.img;
-    if (!uploadedImg) {
-      return false;
-    }
-    const previewBox = document.querySelector(".image-preview");
-    reader.onload = () => {
-      //preview 백그라운ㅇ드 이미지 바꿔주기
-      previewBox.style.backgroundImage = `url(${reader.result})`;
-    };
-
-    reader.readAsDataURL(uploadedImg);
-  };
-
-  // 글 수정 함수
-  const submitInputHandler = async (e) => {
-    e.preventDefault();
-
-    const submitFile = {
-      title: inputValue?.title,
-      cateCode: inputValue?.cateCode,
-      used: inputValue?.used,
-      exchange: inputValue?.exchange,
-      // comma 찍힌 String 값이기 때문에 Number형태로 변경하여 보내주어야 한다.
-      price: Number(inputValue.price?.replaceAll(",", "")),
-      deliveryFee: inputValue?.deliveryFee,
-      desc: inputValue?.desc,
-      quantity: Number(inputValue?.quantity),
-      thunderPay: inputValue?.thunderPay,
-    };
-    // File이 아닌 데이터들을 json 형태로 변환하여 보내주기 위함
-    const dto = new Blob([JSON.stringify(submitFile)], {
-      type: "application/json",
-    });
-    // const submitImage = new Blob(inputValue.img, {
-    //   type: "image/jpeg",
-    // });
-
-    const jsonItem = JSON.stringify(submitFile);
-
-    const formData = new FormData();
-    formData.append("image", inputValue.img);
-    formData.append("dto", dto);
-
-    console.log("key : image", formData.get("image"));
-    console.log("key : dto", formData.get("dto"));
-
-    await dispatch(__editDetail({ formData: formData, pdId: pdId }));
-    navigate(`/products/${pdId}`);
-  };
+  }, [inputValue.img, exPhoto]);
 
   // 카테고리코드 => 한글 변환 switch 문
-  const category = (cate) => {
-    switch (cate) {
-      case 1:
-        return "여성의류";
-      case 2:
-        return "남성의류";
-      case 3:
-        return "신발";
-      case 4:
-        return "가방";
-      case 5:
-        return "시계/주얼리";
-      case 6:
-        return "패션액세서리";
-      case 7:
-        return "디지털/가전";
-      case 8:
-        return "스포츠/레저";
-      default:
-        return null;
-    }
-  };
+  const { category } = useCategory();
 
   // 번개페이 한꺼번에 체크하기 위한 함수
   const [checkList, setCheckList] = useState([]);
@@ -203,6 +87,20 @@ function Edit() {
       return setCheckList([]);
     }
   };
+
+  // 기존 사진 삭제 함수
+  const deleteExistingPhotoHandler = () => {
+    setExPhoto(null);
+  };
+
+  // 새로 업로드한 사진 삭제 함수
+  const deletePhotoHandler = () => {
+    setInputValue({ ...inputValue, img: null });
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Wrapper>
@@ -222,8 +120,23 @@ function Edit() {
                   multiple=""
                 />
               </StPhotoInputBox>
-
-              <StPhotoPreview className="image-preview"></StPhotoPreview>
+              {inputValue.img ? (
+                <StPhotoPreview url={`${previewUrl}`}>
+                  <button type="button" onClick={deletePhotoHandler}>
+                    삭제
+                  </button>
+                </StPhotoPreview>
+              ) : (
+                <StPhotoPreview
+                  url={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${exPhoto}`}
+                >
+                  {exPhoto ? (
+                    <button type="button" onClick={deleteExistingPhotoHandler}>
+                      삭제
+                    </button>
+                  ) : null}
+                </StPhotoPreview>
+              )}
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
@@ -269,21 +182,52 @@ function Edit() {
           <InputList name="카테고리" important>
             <Column>
               {" "}
-              <select
+              <CateButtonWrapper
                 name="cateCode"
                 value={inputValue.cateCode}
-                onChange={onChangeHandler}
                 required
               >
-                <option value="1">여성의류</option>
-                <option value="2">남성의류</option>
-                <option value="3">신발</option>
-                <option value="4">가방</option>
-                <option value="5">시계/주얼리</option>
-                <option value="6">패션액세서리</option>
-                <option value="7">디지털/가전</option>
-                <option value="8">스포츠/레저</option>
-              </select>
+                <CateButtonBox>
+                  <CateButton type="button" value="1" onClick={onSelectHandler}>
+                    여성의류
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="2" onClick={onSelectHandler}>
+                    남성의류
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="3" onClick={onSelectHandler}>
+                    신발
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="4" onClick={onSelectHandler}>
+                    가방
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="5" onClick={onSelectHandler}>
+                    시계/주얼리
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="6" onClick={onSelectHandler}>
+                    패션액세서리
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="7" onClick={onSelectHandler}>
+                    디지털/가전
+                  </CateButton>
+                </CateButtonBox>
+                <CateButtonBox>
+                  <CateButton type="button" value="8" onClick={onSelectHandler}>
+                    스포츠/레저
+                  </CateButton>
+                </CateButtonBox>
+              </CateButtonWrapper>
               <p>선택한 카테고리 :{category(Number(inputValue.cateCode))}</p>
             </Column>
           </InputList>
@@ -441,89 +385,5 @@ function Edit() {
     </Wrapper>
   );
 }
-
-const PostList = styled.form`
-  display: block;
-  width: 1024px;
-  margin: auto;
-`;
-
-const StPhotoInputWrapper = styled.ul`
-  display: flex;
-  width: 856px;
-  flex-wrap: wrap;
-  overflow-x: hidden;
-`;
-
-const StPhotoInputBox = styled.li`
-  width: 202px;
-  height: 202px;
-  position: relative;
-  border: 1px solid rgb(230, 229, 239);
-  background: rgb(250, 250, 253);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: rgb(155, 153, 169);
-  font-size: 1rem;
-  margin-right: 1rem;
-
-  ::before {
-    content: "";
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 2rem;
-    height: 2rem;
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICAgIDxwYXRoIGZpbGw9IiNEQ0RCRTQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTI4LjQ3MSAzMkgzLjUzYy0uOTcxIDAtMS44OTQtLjQyMi0yLjUyOS0xLjE1N2wtLjAyNi0uMDNBNCA0IDAgMCAxIDAgMjguMTk4VjguNjA3QTQgNCAwIDAgMSAuOTc0IDUuOTlMMSA1Ljk2YTMuMzQzIDMuMzQzIDAgMCAxIDIuNTI5LTEuMTU2aDIuNTM0YTIgMiAwIDAgMCAxLjUzNy0uNzJMMTAuNC43MkEyIDIgMCAwIDEgMTEuOTM3IDBoOC4xMjZBMiAyIDAgMCAxIDIxLjYuNzJsMi44IDMuMzYzYTIgMiAwIDAgMCAxLjUzNy43MmgyLjUzNGMuOTcxIDAgMS44OTQuNDIzIDIuNTI5IDEuMTU3bC4wMjYuMDNBNCA0IDAgMCAxIDMyIDguNjA2djE5LjU5MWE0IDQgMCAwIDEtLjk3NCAyLjYxN2wtLjAyNi4wM0EzLjM0MyAzLjM0MyAwIDAgMSAyOC40NzEgMzJ6TTE2IDkuNmE4IDggMCAxIDEgMCAxNiA4IDggMCAwIDEgMC0xNnptMCAxMi44YzIuNjQ3IDAgNC44LTIuMTUzIDQuOC00LjhzLTIuMTUzLTQuOC00LjgtNC44YTQuODA1IDQuODA1IDAgMCAwLTQuOCA0LjhjMCAyLjY0NyAyLjE1MyA0LjggNC44IDQuOHoiLz4KPC9zdmc+Cg==);
-    margin-bottom: 1rem;
-  }
-`;
-
-const StPhotoInput = styled.input`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  opacity: 0;
-  cursor: pointer;
-  font-size: 0px;
-`;
-
-const StPhotoPreview = styled.div`
-  width: 202px;
-  height: 202px;
-  background-repeat: no-repeat;
-  background-size: cover;
-`;
-
-const StPhotoInputGuide = styled.div`
-  margin-top: 1.5rem;
-  color: rgb(74, 164, 255);
-  line-height: 1.5;
-  font-size: 14px;
-`;
-
-const StDescInput = styled.textarea`
-  width: 100%;
-  height: 250px;
-  border: 1px solid lightgray;
-  line-height: 1.35;
-  resize: none;
-  padding: 1rem;
-  cursor: text;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  background-color: field;
-  /* &:active {
-    border: 1px solid gray;
-  }
-
-  &:hover {
-    border: 1px solid gray;
-  } */
-`;
 
 export default Edit;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import Card from "../components/Card";
-import LoginModal from "../components/LoginModal";
+import LoginModal from "../features/auth/LoginModal";
 
 function Home() {
   let [isLogin, setIsLogin] = useState(false);

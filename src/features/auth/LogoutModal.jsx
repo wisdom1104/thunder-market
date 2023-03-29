@@ -1,38 +1,34 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
 import styled from "styled-components";
-import { __doneDetail } from "../../redux/modules/detailSlice";
+import { isLoginActions } from "../../redux/modules/loginSlice";
 
-function DoneModal({ isDoneModal, setIsDoneModal, pdId }) {
+function LogoutModal({ isLogoutModal, setIsLogoutModal }) {
   const dispatch = useDispatch();
 
-  const doneProductHandler = async () => {
-    dispatch(
-      await __doneDetail({
-        pdId,
-      })
-    );
-    setIsDoneModal(!isDoneModal);
+  const logout = () => {
+    dispatch(isLoginActions.logout());
+    setIsLogoutModal(!isLogoutModal);
   };
 
   return (
     <>
       <div>
         {
-          isDoneModal == true ? (
+          isLogoutModal === true ? (
             <ModalBackground
               onClick={() => {
-                setIsDoneModal(!isDoneModal);
+                setIsLogoutModal(!isLogoutModal);
               }}
             >
               <Modal onClick={(e) => e.stopPropagation()}>
-                <Content>상품을 구매하시겠습니까?</Content>
+                <Title>로그아웃</Title>
+                <Content>로그아웃 하시겠습니까?</Content>
                 <BtnBox>
-                  <OkBtn onClick={doneProductHandler}>확인</OkBtn>
+                  <OkBtn onClick={logout}>확인</OkBtn>
                   <CancelBtn
                     onClick={() => {
-                      setIsDoneModal(!isDoneModal);
+                      setIsLogoutModal(!isLogoutModal);
                     }}
                   >
                     취소
@@ -47,8 +43,7 @@ function DoneModal({ isDoneModal, setIsDoneModal, pdId }) {
   );
 }
 
-export default DoneModal;
-
+export default LogoutModal;
 const CancelBtn = styled.button`
   height: 3rem;
   text-align: center;
