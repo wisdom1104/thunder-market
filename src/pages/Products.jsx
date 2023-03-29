@@ -43,6 +43,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { __getDetail } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
 import { useCategory } from "../hooks/useCategory";
+import DetailTitle from "../features/detail/DetailTitle";
+import DetailButton from "../features/detail/DetailButton";
 
 function Products() {
   const params = useParams();
@@ -63,6 +65,7 @@ function Products() {
     return () => {};
   }, [pdId, done]);
 
+  // 카테고리 분류 커스텀 훅
   const { category } = useCategory();
 
   if (isLoading) {
@@ -85,22 +88,20 @@ function Products() {
                     <ProductTitle>{posts?.title}</ProductTitle>
                     {nick == posts?.nick ? (
                       <>
-                        {" "}
-                        <button
+                        <DetailButton
                           onClick={() => navigate(`/products/${pdId}/edit`)}
                         >
                           수정
-                        </button>
-                        <button
+                        </DetailButton>
+                        <DetailButton
                           onClick={() => {
                             setIsDeleteModal(!isDeleteModal);
                           }}
                         >
                           삭제
-                        </button>
+                        </DetailButton>
                       </>
                     ) : null}
-
                     <Row>
                       <ProductPrice>
                         {posts?.price?.toLocaleString()}원
@@ -209,20 +210,21 @@ function Products() {
             </ProductInfoContentWrapper>
           </ProductInfoBox>
         </ProductInfoWrapper>
-
-        <>
-          연관상품
-          <RelatedItemBox>
-            {posts?.productList?.map((item) => (
-              <DetailCard
-                key={item.id}
-                title={item.title}
-                pdId={item.id}
-                img={item.img}
-              />
-            ))}
-          </RelatedItemBox>
-        </>
+        <DescWrapper>
+          <Column>
+            <DetailTitle>연관상품</DetailTitle>
+            <RelatedItemBox>
+              {posts?.productList?.map((item) => (
+                <DetailCard
+                  key={item.id}
+                  title={item.title}
+                  pdId={item.id}
+                  img={item.img}
+                />
+              ))}
+            </RelatedItemBox>
+          </Column>
+        </DescWrapper>
         <DescWrapper>
           <DescBox>
             <Column>
@@ -230,7 +232,9 @@ function Products() {
               <DescContent>{posts?.desc}</DescContent>
             </Column>
           </DescBox>
-          <StoreBox>상점정보</StoreBox>
+          <StoreBox>
+            <DescTitle>상점정보</DescTitle>
+          </StoreBox>
         </DescWrapper>
         <div>광고</div>
       </Layout>
