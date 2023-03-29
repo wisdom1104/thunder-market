@@ -31,7 +31,7 @@ function Edit() {
   // 이전 페이지에서 리덕스 스토어에 저장된 값 그대로 가져옴
   const { posts, isLoading } = useSelector((state) => state.detail);
   const newItem = {
-    img: "",
+    img: null,
     title: posts?.title,
     cateCode: posts?.cateCode,
     used: posts?.used,

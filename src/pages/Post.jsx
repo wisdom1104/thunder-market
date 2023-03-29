@@ -2,16 +2,12 @@ import React, { useEffect, useState } from "react";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import InputList from "../features/post/InputList";
-import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
 import FloaingFooter from "../features/post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
-import { __getDetail, __postDetail } from "../redux/modules/detailSlice";
-import { useDispatch, useSelector } from "react-redux";
-import imageCompression from "browser-image-compression";
+import { __postDetail } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
 import { useNavigate } from "react-router";
-import { async } from "q";
 import { useCategory } from "../hooks/useCategory";
 import {
   PostList,
@@ -87,6 +83,11 @@ function Post() {
     setInputValue({ ...inputValue, img: null });
   };
 
+  console.log("중고여부", inputValue.used);
+  console.log("교환여부", inputValue.exchange);
+  console.log("번개페이", inputValue.thunderPay);
+  console.log("운포", inputValue.deliveryFee);
+
   return (
     <Wrapper>
       <Layout>
@@ -101,6 +102,7 @@ function Post() {
                   name="img"
                   accept="image/jpeg"
                   onChange={fileInputHandler}
+                  required
                 />
               </StPhotoInputBox>
               {inputValue.img ? (
@@ -138,7 +140,7 @@ function Post() {
                   value={inputValue.title}
                   placeholder="상품 제목을 입력해주세요."
                   onChange={onChangeHandler}
-                  // required
+                  required
                   maxLength="40"
                 />
                 <span>{inputValue.title.length}/40</span>
@@ -157,7 +159,7 @@ function Post() {
               <CateButtonWrapper
                 name="cateCode"
                 value={inputValue.cateCode}
-                required
+                // required
               >
                 <CateButtonBox>
                   <CateButton type="button" value="1" onClick={onSelectHandler}>
@@ -253,6 +255,7 @@ function Post() {
                 value={inputValue.price}
                 onChange={changeNumberHandler}
                 maxLength="11"
+                required
               />
               원
             </label>
@@ -280,6 +283,7 @@ function Post() {
                   value={inputValue.desc}
                   onChange={onChangeHandler}
                   maxLength="2000"
+                  required
                 ></StDescInput>
                 {1 < inputValue.desc.length < 10 ? (
                   <span style={{ color: "orange" }}>
@@ -300,7 +304,6 @@ function Post() {
                 name="quantity"
                 value={inputValue.quantity}
                 onChange={onChangeHandler}
-                id=""
               />
               개
             </label>
@@ -308,7 +311,7 @@ function Post() {
           <div>빠른판매</div>
           <InputList name="옵션">
             <Column>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="thunderPay"
@@ -320,7 +323,7 @@ function Post() {
                 />
                 안전결제 환영
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="firstTerm"
@@ -330,7 +333,7 @@ function Post() {
                 안전결제(번개페이) 요청을 거절하지 않는 대신 혜택을 받을 수
                 있어요.
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="secondTerm"
@@ -339,7 +342,7 @@ function Post() {
                 />
                 내 상품을 먼저 보여주는 전용 필터로 더 빠르게 판매할 수 있어요.
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="thirdTerm"

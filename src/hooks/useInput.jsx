@@ -29,13 +29,13 @@ export const useInput = (initialValue, action, id) => {
     });
   };
 
-  // 라디오 값 변경 함수
+  // 체크박스 값 변경 함수
   const onCheckHandler = (e) => {
     const { name, value } = e.target;
 
     setInputValue({
       ...inputValue,
-      [name]: value == "true" ? "false" : "true",
+      [name]: value === "true" ? "false" : "true",
     });
   };
 
@@ -89,9 +89,17 @@ export const useInput = (initialValue, action, id) => {
     const dto = new Blob([JSON.stringify(submitFile)], {
       type: "application/json",
     });
+    if (inputValue.img == null) {
+      const formData = new FormData();
+      const emptyImageBlob = new Blob([], { type: "image/jpeg" });
+      formData.append("image", emptyImageBlob, "image");
+      formData.append("dto", dto);
+      await dispatch(action({ formData, pdId: id }));
+      navigate("/");
+    }
 
     const formData = new FormData();
-    formData.append("image", inputValue.img);
+    formData.append("image", inputValue.img, "image");
     formData.append("dto", dto);
 
     await dispatch(action({ formData, pdId: id }));
