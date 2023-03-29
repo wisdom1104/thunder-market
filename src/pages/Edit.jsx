@@ -6,9 +6,8 @@ import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
 import FloaingFooter from "../features/post/FloaingFooter";
 import { useInput } from "../hooks/useInput";
-import { __getDetail, __editDetail } from "../redux/modules/detailSlice";
-import { useDispatch, useSelector } from "react-redux";
-import imageCompression from "browser-image-compression";
+import { __editDetail } from "../redux/modules/detailSlice";
+import { useSelector } from "react-redux";
 import { cookies } from "../shared/cookies";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -22,20 +21,17 @@ import {
   CateButtonBox,
   CateButton,
   CateButtonWrapper,
-} from "./PostStyle";
+} from "../features/post/PostStyle";
 import { useCategory } from "../hooks/useCategory";
+import { usePreview } from "../hooks/usePreview";
 
 function Edit() {
-  const dispatch = useDispatch();
-
   const params = useParams();
   const pdId = params.pdId;
-
+  // 이전 페이지에서 리덕스 스토어에 저장된 값 그대로 가져옴
   const { posts, isLoading } = useSelector((state) => state.detail);
-
-  const jsonPost = JSON.stringify(posts);
   const newItem = {
-    img: posts.img,
+    img: "",
     title: posts?.title,
     cateCode: posts?.cateCode,
     used: posts?.used,
@@ -50,8 +46,11 @@ function Edit() {
 
   const token = cookies.get("token");
   const navigate = useNavigate();
-  // const [inputValue, setInputValue] = useState(newItem);
 
+  // 기존 이미지 state 설정
+  const [exPhoto, setExPhoto] = useState(posts?.img);
+
+  // 입력 폼 커스텀 훅
   const {
     inputValue,
     onChangeHandler,
@@ -61,33 +60,20 @@ function Edit() {
     fileInputHandler,
     onSelectHandler,
     setInputValue,
-  } = useInput(newItem, __editDetail);
+  } = useInput(newItem, __editDetail, pdId);
 
-  console.log(inputValue);
+  // 이미지 미리보기 커스텀 훅
+  const { preview, previewUrl } = usePreview();
 
   useEffect(() => {
     if (!token) {
       alert("로그인이 필요합니다!");
       navigate("/");
     }
-
-    dispatch(__getDetail(+pdId));
+    preview(inputValue.img);
 
     return () => {};
-  }, []);
-
-  useEffect(() => {
-    return () => {};
-  }, [inputValue.img]);
-
-  //이미지 업로드시 화면 재렌더링을 위한 useEffect
-  // useEffect(() => {
-
-  //   // dispatch(__getDetail(pdId));
-  //   // preview();
-
-  //   return () => {};
-  // }, [inputValue.img, jsonPost]);
+  }, [inputValue.img, exPhoto]);
 
   // 카테고리코드 => 한글 변환 switch 문
   const { category } = useCategory();
@@ -102,6 +88,12 @@ function Edit() {
     }
   };
 
+  // 기존 사진 삭제 함수
+  const deleteExistingPhotoHandler = () => {
+    setExPhoto(null);
+  };
+
+  // 새로 업로드한 사진 삭제 함수
   const deletePhotoHandler = () => {
     setInputValue({ ...inputValue, img: null });
   };
@@ -128,20 +120,23 @@ function Edit() {
                   multiple=""
                 />
               </StPhotoInputBox>
-              {/* <img
-                src={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${posts.img}`}
-                alt="상품 이미지"
-              /> */}
-              {posts.img ? (
-                <StPhotoPreview
-                  className="image-preview"
-                  url={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${posts.img}`}
-                >
+              {inputValue.img ? (
+                <StPhotoPreview url={`${previewUrl}`}>
                   <button type="button" onClick={deletePhotoHandler}>
                     삭제
                   </button>
                 </StPhotoPreview>
-              ) : null}
+              ) : (
+                <StPhotoPreview
+                  url={`https://gykimagebucket.s3.ap-northeast-2.amazonaws.com/uploaded-image/${exPhoto}`}
+                >
+                  {exPhoto ? (
+                    <button type="button" onClick={deleteExistingPhotoHandler}>
+                      삭제
+                    </button>
+                  ) : null}
+                </StPhotoPreview>
+              )}
             </StPhotoInputWrapper>
             <StPhotoInputGuide>
               <b>* 상품 이미지는 640x640에 최적화 되어 있습니다.</b>
