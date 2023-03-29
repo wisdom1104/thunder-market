@@ -8,7 +8,7 @@ const initialState = {
   error: null,
 };
 
-// 게시물 조회 함수
+//게시물 조회 함수
 export const __getCards = createAsyncThunk(
   "__getCards",
   async (payload, thunkAPI) => {

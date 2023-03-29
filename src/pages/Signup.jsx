@@ -1,119 +1,42 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
-import Wrapper from "../components/Wrapper";
 import {
-  __checkUserEmail,
-  __checkUserNick,
-  __signUp,
-} from "../redux/modules/loginSlice";
+  useCheckUserEmail,
+  useCheckUserNick,
+  usePasswordCheck,
+  useSignUp,
+  useValidEmail,
+  useValidNick,
+  useValidPassword,
+} from "../hooks/useSignUp";
 
 function Signup() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // 회원가입
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-    nick: "",
-  });
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    // 공란 검사
-    if (
-      user.email === "" ||
-      user.password === "" ||
-      user.passwordCheck === "" ||
-      user.nick === ""
-    ) {
-      alert("빈 칸을 작성해 주세요.");
-      return;
-    }
-    if (possibleEmail && possibleNick) {
-      const result = await dispatch(__signUp(user));
-      if (result.type === "signUp/fulfilled") {
-        navigate("/");
-      }
-    } else {
-      alert("중복 검사를 모두 해주세요.");
-      return;
-    }
-  };
-
   // 이메일 유효성 검사
-  const [emailMsg, setEmailMsg] = useState("");
-  const validEmail = (e) => {
-    const email = e.target.value;
-    const isValidEmail =
-      /^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(email);
-    if (isValidEmail) {
-      setEmailMsg(null);
-    } else {
-      setEmailMsg("이메일 형식에 맞지 않습니다.");
-    }
-  };
+  const [emailMsg, validEmail] = useValidEmail();
 
   // 이메일 중복확인
-  const [possibleEmail, setPossibleEmail] = useState(false);
-  const checkIdHandler = (email) => {
-    dispatch(__checkUserEmail(email));
-    setPossibleEmail(true);
-  };
+  const [possibleEmail, checkIdHandler] = useCheckUserEmail();
 
   // 닉네임 유효성 검사
-  const [nicknameMsg, setNicknameMsg] = useState("");
-  const validNickname = (e) => {
-    const nickname = e.target.value;
-    const isValidNickname = /^[가-힣a-zA-Z0-9]{2,15}$/.test(nickname);
-    if (isValidNickname) {
-      setNicknameMsg(null);
-      return;
-    } else {
-      setNicknameMsg("닉네임은 2~15글자, 한글, 알파벳, 숫자만 입력 가능합니다");
-      return;
-    }
-  };
+  const [nickMsg, validNick] = useValidNick();
 
   // 닉네임 중복확인
-  const [possibleNick, setPossibleNick] = useState(false);
-  const checkNickHandler = async (nick) => {
-    // console.log(possibleNick);
-    dispatch(__checkUserNick(nick));
-    setPossibleNick(true);
-  };
+  const [possibleNick, checkNickHandler] = useCheckUserNick();
+
+  // 회원가입
+  const [user, setUser, submitHandler] = useSignUp({
+    possibleEmail,
+    possibleNick,
+  });
 
   //비밀번호 유효성 검사
-  const [passwordMsg, setPasswordMsg] = useState("");
-  const validPassword = (e) => {
-    const password = e.target.value;
-    const isValidPassword =
-      /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[a-zA-Z\d!@#$%^&*()_+]{8,15}$/.test(
-        password
-      );
-    if (isValidPassword) {
-      setPasswordMsg(null);
-    } else {
-      setPasswordMsg(
-        "비밀번호는 숫자와 영어 소문자와 특수문자를 사용해 8~15자리로 입력해주세요."
-      );
-    }
-  };
-  // 비밀번호 일치 검사
-  const [passwordCheckPwMsg, setpasswordCheckPwMsg] = useState("");
-  const onChangePasswordCheck = (e) => {
-    e.preventDefault();
-    const checkPw = e.target.value;
+  const [passwordMsg, validPassword] = useValidPassword();
 
-    if (user.password.length >= 1 && user.password !== checkPw) {
-      setpasswordCheckPwMsg("비밀번호가 일치하지 않습니다.");
-    }
-    if (user.password.length >= 1 && user.password === checkPw) {
-      setpasswordCheckPwMsg("비밀번호가 일치합니다.");
-    }
-  };
+  // 비밀번호 일치 검사
+  const [passwordCheckPwMsg, onChangePasswordCheck] = usePasswordCheck(
+    user.password
+  );
 
   return (
     <>
@@ -177,7 +100,7 @@ function Signup() {
                     value={user.nick}
                     name="nick"
                     onChange={(e) => {
-                      validNickname(e);
+                      validNick(e);
                       setUser({ ...user, nick: e.target.value });
                     }}
                     placeholder="닉네임을 입력해 주세요."
@@ -189,7 +112,7 @@ function Signup() {
                     중복확인
                   </Btn>
                 </Row>
-                <ValidMsg>{nicknameMsg}</ValidMsg>
+                <ValidMsg>{nickMsg}</ValidMsg>
               </InputBox>
               <SignUpBtnBox>
                 <Btn>회원가입 완료</Btn>

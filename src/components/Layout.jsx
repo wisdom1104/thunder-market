@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Nav from "./Nav";
 
-function Layout({ children, isLogin, setIsLogin }) {
+function Layout({ children }) {
   return (
     <>
       <Nav />

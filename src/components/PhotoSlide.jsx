@@ -65,7 +65,7 @@ const PhotoSlideBox = styled.div`
 
 const Banner = styled.div`
   position: relative;
-  margin: 16px auto 0px;
+  margin: 16px auto 60px;
   max-width: 1024px;
   height: 200px;
 `;
