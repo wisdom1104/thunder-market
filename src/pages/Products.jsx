@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../axios/api";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import DeleteModal from "../features/detail/DeleteModal";
@@ -36,10 +37,10 @@ import {
 import ThunderPayIcon from "../features/detail/ThunderPayIcon";
 import DetailCard from "../features/detail/DetailCard";
 import DetailState from "../features/detail/DetailState";
-import { Column, Row, RowCenter } from "../components/Flex";
+import { Column, Row } from "../components/Flex";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { __getDetail } from "../redux/modules/detailSlice";
+import { __getDetail, __likeDetail } from "../redux/modules/detailSlice";
 import { cookies } from "../shared/cookies";
 import { useCategory } from "../hooks/useCategory";
 import DetailTitle from "../features/detail/DetailTitle";
@@ -49,21 +50,29 @@ function Products() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { posts, isLoading, error } = useSelector((state) => state.detail);
+  const { posts, isLoading } = useSelector((state) => state.detail);
   let [isDeleteModal, setIsDeleteModal] = useState(false);
   let [isDoneModal, setIsDoneModal] = useState(false);
 
   const nick = cookies.get("nick");
   const jsonPosts = JSON.stringify(posts);
+  const jsonDibsNum = JSON.stringify(posts.dibsNum);
+
+  console.log(posts);
 
   const pdId = params.pdId;
   const done = posts?.done;
 
+  console.log("좋아요 여부", posts.dibs);
+  console.log("좋아요 개수", posts.dibsNum);
+
   useEffect(() => {
     dispatch(__getDetail(pdId));
+  }, [pdId || jsonPosts]);
 
-    return () => {};
-  }, [pdId, jsonPosts]);
+  const likeButtonHandler = async () => {
+    dispatch(__likeDetail({ pdId }));
+  };
 
   // 카테고리 분류 커스텀 훅
   const { category } = useCategory();
@@ -137,7 +146,9 @@ function Products() {
                             height="16"
                             alt="상품 상태 아이콘"
                           />
-                          <ProductStateLikeInfo>2일전</ProductStateLikeInfo>
+                          <ProductStateLikeInfo>
+                            {posts?.timeInterval}
+                          </ProductStateLikeInfo>
                         </ProductStateLike>
                       </ProductStateLikeBox>
                       <ProductReport>
@@ -164,25 +175,51 @@ function Products() {
                 </ProductInfo>
                 <ProductInfoBtnBox>
                   <FavoriteButtonWrapper>
-                    <FavoriteButton>
-                      <img
-                        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyIgZD0iTTcuMDA1IDEuMDQ1aC4yMzNjLjI4LjIyOC41MzcuNDkuNzYyLjc3Ny4yMjUtLjI4OC40ODEtLjU0OS43NjItLjc3N2guMjMzYTYuMTYgNi4xNiAwIDAgMC0uMDktLjExM0M5LjY4NC4zNDQgMTAuNjI4IDAgMTEuNiAwIDE0LjA2NCAwIDE2IDIuMTEgMTYgNC43OTZjMCAzLjI5Ni0yLjcyIDUuOTgxLTYuODQgMTAuMDYyTDggMTZsLTEuMTYtMS4xNTFDMi43MiAxMC43NzcgMCA4LjA5MiAwIDQuNzk2IDAgMi4xMSAxLjkzNiAwIDQuNCAwYy45NzIgMCAxLjkxNi4zNDQgMi42OTUuOTMyYTYuMTYgNi4xNiAwIDAgMC0uMDkuMTEzeiIvPgo8L3N2Zz4K"
-                        width="16"
-                        height="16"
-                        alt="찜 아이콘"
-                      />
-                      <span>찜</span>
-                      <span>0</span>
-                      <FavoriteToolTip>
-                        <img
-                          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICAgIDxwYXRoIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjEuNSIgZD0iTTIuMTA2IDdsMy42NjMgNCA3LjAxNS04IiBvcGFjaXR5PSIuNDA2Ii8+Cjwvc3ZnPgo="
-                          width="14"
-                          height="14"
-                          alt="찜 아이콘"
-                        />
-                        찜이해제되었습니다
-                      </FavoriteToolTip>
-                    </FavoriteButton>
+                    {posts?.dibs ? (
+                      <>
+                        <FavoriteButton liked onClick={likeButtonHandler}>
+                          <img
+                            src="data:image/svg+xml;base64,  PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyIgZD0iTTcuMDA1IDEuMDQ1aC4yMzNjLjI4LjIyOC41MzcuNDkuNzYyLjc3Ny4yMjUtLjI4OC40ODEtLjU0OS43NjItLjc3N2guMjMzYTYuMTYgNi4xNiAwIDAgMC0uMDktLjExM0M5LjY4NC4zNDQgMTAuNjI4IDAgMTEuNiAwIDE0LjA2NCAwIDE2IDIuMTEgMTYgNC43OTZjMCAzLjI5Ni0yLjcyIDUuOTgxLTYuODQgMTAuMDYyTDggMTZsLTEuMTYtMS4xNTFDMi43MiAxMC43NzcgMCA4LjA5MiAwIDQuNzk2IDAgMi4xMSAxLjkzNiAwIDQuNCAwYy45NzIgMCAxLjkxNi4zNDQgMi42OTUuOTMyYTYuMTYgNi4xNiAwIDAgMC0uMDkuMTEzeiIvPgo8L3N2Zz4K"
+                            width="16"
+                            height="16"
+                            alt="찜 아이콘"
+                          />
+                          <span>찜</span>
+                          <span>{posts?.dibsNum}</span>
+                          <FavoriteToolTip>
+                            <img
+                              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICAgIDxwYXRoIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjEuNSIgZD0iTTIuMTA2IDdsMy42NjMgNCA3LjAxNS04IiBvcGFjaXR5PSIuNDA2Ii8+Cjwvc3ZnPgo="
+                              width="14"
+                              height="14"
+                              alt="찜 아이콘"
+                            />
+                            찜이해제되었습니다
+                          </FavoriteToolTip>
+                        </FavoriteButton>
+                      </>
+                    ) : (
+                      <>
+                        <FavoriteButton onClick={likeButtonHandler}>
+                          <img
+                            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0ibm9uemVybyIgZD0iTTcuMDA1IDEuMDQ1aC4yMzNjLjI4LjIyOC41MzcuNDkuNzYyLjc3Ny4yMjUtLjI4OC40ODEtLjU0OS43NjItLjc3N2guMjMzYTYuMTYgNi4xNiAwIDAgMC0uMDktLjExM0M5LjY4NC4zNDQgMTAuNjI4IDAgMTEuNiAwIDE0LjA2NCAwIDE2IDIuMTEgMTYgNC43OTZjMCAzLjI5Ni0yLjcyIDUuOTgxLTYuODQgMTAuMDYyTDggMTZsLTEuMTYtMS4xNTFDMi43MiAxMC43NzcgMCA4LjA5MiAwIDQuNzk2IDAgMi4xMSAxLjkzNiAwIDQuNCAwYy45NzIgMCAxLjkxNi4zNDQgMi42OTUuOTMyYTYuMTYgNi4xNiAwIDAgMC0uMDkuMTEzeiIvPgo8L3N2Zz4K"
+                            width="16"
+                            height="16"
+                            alt="찜 아이콘"
+                          />
+                          <span>찜</span>
+                          <span>{posts?.dibsNum}</span>
+                          <FavoriteToolTip>
+                            <img
+                              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICAgIDxwYXRoIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjEuNSIgZD0iTTIuMTA2IDdsMy42NjMgNCA3LjAxNS04IiBvcGFjaXR5PSIuNDA2Ii8+Cjwvc3ZnPgo="
+                              width="14"
+                              height="14"
+                              alt="찜 아이콘"
+                            />
+                            찜이해제되었습니다
+                          </FavoriteToolTip>
+                        </FavoriteButton>
+                      </>
+                    )}
 
                     <ThunderTalkButton>
                       <img

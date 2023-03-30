@@ -12,7 +12,7 @@ const initialState = {
 // 상세 게시물 조회 함수
   export const __getDetail = createAsyncThunk('getDetail', async (payload, thunkAPI) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/products/${payload}`)
+      const response = await api.get(`${process.env.REACT_APP_SERVER_URL}/products/${payload}`)
       return thunkAPI.fulfillWithValue(response.data)
     } catch (error) {
       return thunkAPI.rejectWithValue(error)
@@ -69,6 +69,18 @@ const initialState = {
           'Content-Type': 'multipart/form-data',
         }
       })
+      return thunkAPI.fulfillWithValue(payload)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error)
+    }
+  })
+
+    // 게시물 찜 함수
+  export const __likeDetail = createAsyncThunk('postDetail', async (payload, thunkAPI) => {
+    try {
+      const {pdId} = payload
+      await api.post(`${process.env.REACT_APP_SERVER_URL}/products/${pdId}/dibs`);
+
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
       return thunkAPI.rejectWithValue(error)
@@ -145,9 +157,23 @@ const detailSlice = createSlice({
           state.error = action.payload
           alert("본인의 상품은 구매하실 수 없습니다!");  
         },
+                    // 게시물 찜 Reducer -------------------------------
+        [__likeDetail.pending]: (state, action) => {
+          state.isLoading = true
+          state.error = false
+        },
+        [__likeDetail.fulfilled]: (state, action) => {
+          const countNum = state.posts.dibs ? state.posts.dibsNum-1:state.posts.dibsNum+1
+          state.isLoading = false
+          state.error = false
+          state.posts = {...state.posts, dibs:!state.posts.dibs, dibsNum:countNum}
+        },
+        [__likeDetail.rejected]: (state, action) => {
+          state.isLoading = false
+          state.error = action.payload
+        },
 
 
 }})
 export const {} = detailSlice.actions
 export default detailSlice.reducer
-

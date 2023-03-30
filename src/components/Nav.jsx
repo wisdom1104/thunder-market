@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import LoginModal from "../features/auth/LoginModal";
 import LogoutModal from "../features/auth/LogoutModal";
+import { cookies } from "../shared/cookies";
 
 function Nav() {
   let [isLoginModal, setIsLoginModal] = useState(false);
   let [isLogoutModal, setIsLogoutModal] = useState(false);
 
   const isLogin = useSelector((state) => state.login.isLogin);
+
+  useEffect(() => {
+    return () => {};
+  }, [isLogin]);
 
   return (
     <StNavWrapper>
