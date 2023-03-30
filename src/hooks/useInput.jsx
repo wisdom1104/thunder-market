@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import imageCompression from "browser-image-compression";
 import { useNavigate } from "react-router-dom";
-import { useCategory } from "./useCategory";
 
 export const useInput = (initialValue, action, id) => {
   const dispatch = useDispatch();

@@ -1,45 +1,40 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { __doneDetail } from "../../redux/modules/detailSlice";
 
 function DoneModal({ isDoneModal, setIsDoneModal, pdId }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const doneProductHandler = async () => {
     dispatch(__doneDetail({ pdId }));
     setIsDoneModal(!isDoneModal);
-    navigate(`/products/${pdId}`);
   };
 
   return (
     <>
       <div>
-        {
-          isDoneModal == true ? (
-            <ModalBackground
-              onClick={() => {
-                setIsDoneModal(!isDoneModal);
-              }}
-            >
-              <Modal onClick={(e) => e.stopPropagation()}>
-                <Content>상품을 구매하시겠습니까?</Content>
-                <BtnBox>
-                  <OkBtn onClick={doneProductHandler}>확인</OkBtn>
-                  <CancelBtn
-                    onClick={() => {
-                      setIsDoneModal(!isDoneModal);
-                    }}
-                  >
-                    취소
-                  </CancelBtn>
-                </BtnBox>
-              </Modal>
-            </ModalBackground>
-          ) : null //기계역할
-        }
+        {isDoneModal === true ? (
+          <ModalBackground
+            onClick={() => {
+              setIsDoneModal(!isDoneModal);
+            }}
+          >
+            <Modal onClick={(e) => e.stopPropagation()}>
+              <Content>상품을 구매하시겠습니까?</Content>
+              <BtnBox>
+                <OkBtn onClick={doneProductHandler}>확인</OkBtn>
+                <CancelBtn
+                  onClick={() => {
+                    setIsDoneModal(!isDoneModal);
+                  }}
+                >
+                  취소
+                </CancelBtn>
+              </BtnBox>
+            </Modal>
+          </ModalBackground>
+        ) : null}
       </div>
     </>
   );
@@ -80,13 +75,6 @@ const BtnBox = styled.div`
   border: 0px;
   font: inherit;
   vertical-align: baseline;
-`;
-const Title = styled.h2`
-  font-size: 18px;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  text-align: center;
-  line-height: 1.4;
 `;
 
 const Content = styled.p`
