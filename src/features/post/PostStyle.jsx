@@ -60,16 +60,6 @@ export const StPhotoPreview = styled.div`
   }}
 `;
 
-// export const StPhotoPreview = styled.div`
-//   width: 202px;
-//   height: 202px;
-//   background-repeat: no-repeat;
-//   background-size: cover;
-//   ${({ url }) => {
-//     return `background-image:url(${url})`;
-//   }}
-// `;
-
 export const StPhotoInputGuide = styled.div`
   margin-top: 1.5rem;
   color: rgb(74, 164, 255);
@@ -78,7 +68,7 @@ export const StPhotoInputGuide = styled.div`
 `;
 
 export const StDescInput = styled.textarea`
-  width: 100%;
+  width: 95%;
   height: 250px;
   border: 1px solid lightgray;
   line-height: 1.35;
@@ -88,13 +78,11 @@ export const StDescInput = styled.textarea`
   white-space: pre-wrap;
   overflow-wrap: break-word;
   background-color: field;
-  /* &:active {
-    border: 1px solid gray;
+  font-size: 15px;
+  font-family: inherit;
+  &:focus {
+    outline: 1.5px gray;
   }
-
-  &:hover {
-    border: 1px solid gray;
-  } */
 `;
 
 export const CateButtonWrapper = styled.ul`
@@ -103,6 +91,7 @@ export const CateButtonWrapper = styled.ul`
   padding: 0.5rem 0px;
   list-style: none;
   border: 1px solid lightgray;
+  margin-bottom: 15px;
 `;
 
 export const CateButtonBox = styled.li`
@@ -123,6 +112,10 @@ export const CateButton = styled.button`
   appearance: button;
   border: 1px solid transparent;
   &:hover {
+    background-color: lightgray;
+  }
+
+  &:focus {
     background-color: lightgray;
   }
 `;

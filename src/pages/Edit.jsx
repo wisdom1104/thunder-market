@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Wrapper from "../components/Wrapper";
 import Layout from "../components/Layout";
 import InputList from "../features/post/InputList";
-import styled from "styled-components";
 import { Column, Row } from "../components/Flex";
 import FloaingFooter from "../features/post/FloaingFooter";
+import PostTextInput from "../features/post/PostTextInput";
 import { useInput } from "../hooks/useInput";
 import { __editDetail } from "../redux/modules/detailSlice";
 import { useSelector } from "react-redux";
@@ -159,7 +159,7 @@ function Edit() {
           <InputList name="제목" important>
             <Column>
               <div>
-                <input
+                <PostTextInput
                   type="text"
                   name="title"
                   value={inputValue.title}
@@ -167,6 +167,7 @@ function Edit() {
                   onChange={onChangeHandler}
                   required
                   maxLength="40"
+                  basic
                 />{" "}
                 <span>{inputValue.title?.length}/40</span>
               </div>
@@ -273,24 +274,24 @@ function Edit() {
           </InputList>
 
           <InputList name="가격" important>
-            <label htmlFor="">
-              <input
+            <label>
+              <PostTextInput
                 type="text"
                 name="price"
                 placeholder="숫자만 입력해주세요."
                 value={inputValue.price}
                 onChange={changeNumberHandler}
                 maxLength="11"
+                basic
               />
               원
             </label>
-            <label htmlFor="">
+            <label>
               <input
                 type="checkbox"
                 name="deliveryFee"
                 onChange={(e) => onCheckHandler(e)}
                 value={inputValue.deliveryFee}
-                // checked={inputValue.deliveryFee == "true"}
               />
               배송비포함
             </label>
@@ -323,13 +324,12 @@ function Edit() {
             </Column>
           </InputList>
           <InputList name="수량">
-            <label htmlFor="">
-              <input
+            <label>
+              <PostTextInput
                 type="text"
                 name="quantity"
                 value={inputValue.quantity}
                 onChange={onChangeHandler}
-                id=""
               />
               개
             </label>
@@ -337,7 +337,7 @@ function Edit() {
           <div>빠른판매</div>
           <InputList name="옵션">
             <Column>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="thunderPay"
@@ -349,7 +349,7 @@ function Edit() {
                 />
                 안전결제 환영
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="firstTerm"
@@ -359,7 +359,7 @@ function Edit() {
                 안전결제(번개페이) 요청을 거절하지 않는 대신 혜택을 받을 수
                 있어요.
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="secondTerm"
@@ -368,7 +368,7 @@ function Edit() {
                 />
                 내 상품을 먼저 보여주는 전용 필터로 더 빠르게 판매할 수 있어요.
               </label>
-              <label htmlFor="">
+              <label>
                 <input
                   type="checkbox"
                   name="thirdTerm"
