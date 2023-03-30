@@ -149,7 +149,8 @@ export const FavoriteButton = styled.button`
   height: 100%;
   font-weight: 600;
   margin-right: 10px;
-  background: rgb(204, 204, 204);
+  background: ${(props) => (props.liked ? "#F5A9D0" : "rgb(204, 204, 204)")};
+  /* background: rgb(204, 204, 204); */
   color: rgb(255, 255, 255);
   display: flex;
   align-items: center;
@@ -157,6 +158,7 @@ export const FavoriteButton = styled.button`
   line-height: 1;
   position: relative;
   border: 1px solid transparent;
+  cursor: pointer;
 `;
 
 export const FavoriteToolTip = styled.div`

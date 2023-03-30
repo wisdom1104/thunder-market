@@ -9,6 +9,11 @@ function LoginModal({ isLoginModal, setIsLoginModal }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const REST_API_KEY = "8556f063804f3a560b2aa9a26c924279";
+  const REDIRECT_URI =
+    "http://clone-thunder-market.s3-website.ap-northeast-2.amazonaws.com/oauth";
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
   // 로그인
   const [user, setUser, submitHandler] = useLogin({
     isLoginModal,
@@ -33,13 +38,7 @@ function LoginModal({ isLoginModal, setIsLoginModal }) {
                   <CacaoLogin>
                     <CacaoBtn
                       onClick={() => {
-                        // window.open(
-                        //   "https://kauth.kakao.com/oauth/authorize?client_id=8556f063804f3a560b2aa9a26c924279&redirect_uri=http://43.201.36.104/kakao/callback&response_type=code",
-                        //   "_blank"
-                        // )
-
-                        dispatch(__kakaologIn());
-                        // navigate("/");
+                        window.open(`${KAKAO_AUTH_URL}`);
                       }}
                     >
                       <CacaoImg src="https://m.bunjang.co.kr/pc-static/resource/7bf83f72cf54461af573.png" />
