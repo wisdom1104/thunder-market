@@ -83,6 +83,7 @@ const initialState = {
 
       return thunkAPI.fulfillWithValue(payload)
     } catch (error) {
+      alert("로그인 후 이용해주세요 !")
       return thunkAPI.rejectWithValue(error)
     }
   })
