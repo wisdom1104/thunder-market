@@ -37,8 +37,9 @@ function LoginModal({ isLoginModal, setIsLoginModal }) {
                   <SubTitle>간편하게 중고거래 시작하기</SubTitle>
                   <CacaoLogin>
                     <CacaoBtn
+                      type="button"
                       onClick={() => {
-                        window.open(`${KAKAO_AUTH_URL}`);
+                        window.location.href = KAKAO_AUTH_URL;
                       }}
                     >
                       <CacaoImg src="https://m.bunjang.co.kr/pc-static/resource/7bf83f72cf54461af573.png" />
