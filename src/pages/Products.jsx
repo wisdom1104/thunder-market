@@ -56,6 +56,8 @@ function Products() {
   const nick = cookies.get("nick");
   const jsonPosts = JSON.stringify(posts);
 
+  console.log("posts", posts);
+
   const pdId = params.pdId;
   const done = posts?.done;
 
@@ -137,7 +139,9 @@ function Products() {
                             height="16"
                             alt="상품 상태 아이콘"
                           />
-                          <ProductStateLikeInfo>2일전</ProductStateLikeInfo>
+                          <ProductStateLikeInfo>
+                            {posts?.timeInterval}
+                          </ProductStateLikeInfo>
                         </ProductStateLike>
                       </ProductStateLikeBox>
                       <ProductReport>
