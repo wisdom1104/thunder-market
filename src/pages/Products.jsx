@@ -56,8 +56,6 @@ function Products() {
   const nick = cookies.get("nick");
   const jsonPosts = JSON.stringify(posts);
 
-  console.log("posts", posts);
-
   const pdId = params.pdId;
   const done = posts?.done;
 
