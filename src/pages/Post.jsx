@@ -22,6 +22,7 @@ import {
   CateButtonWrapper,
 } from "../features/post/PostStyle";
 import { usePreview } from "../hooks/usePreview";
+import PostTextInput from "../features/post/PostTextInput";
 
 function Post() {
   const newItem = {
@@ -129,7 +130,7 @@ function Post() {
           <InputList name="제목" important>
             <Column>
               <div>
-                <input
+                <PostTextInput
                   type="text"
                   name="title"
                   value={inputValue.title}
@@ -137,11 +138,12 @@ function Post() {
                   onChange={onChangeHandler}
                   required
                   maxLength="40"
+                  basic
                 />
                 <span>{inputValue.title.length}/40</span>
               </div>
               <div>
-                {inputValue.title.length < 2 ? (
+                {inputValue.title && inputValue.title.length < 2 ? (
                   <span style={{ color: "orange" }}>
                     상품명을 2자 이상 입력해주세요.
                   </span>
@@ -154,7 +156,7 @@ function Post() {
               <CateButtonWrapper
                 name="cateCode"
                 value={inputValue.cateCode}
-                // required
+                required
               >
                 <CateButtonBox>
                   <CateButton type="button" value="1" onClick={onSelectHandler}>
@@ -240,10 +242,9 @@ function Post() {
               교환가능
             </label>
           </InputList>
-
           <InputList name="가격" important>
             <label htmlFor="">
-              <input
+              <PostTextInput
                 type="text"
                 name="price"
                 placeholder="숫자만 입력해주세요."
@@ -251,6 +252,7 @@ function Post() {
                 onChange={changeNumberHandler}
                 maxLength="11"
                 required
+                basic
               />
               원
             </label>
@@ -280,7 +282,7 @@ function Post() {
                   maxLength="2000"
                   required
                 ></StDescInput>
-                {1 < inputValue.desc.length < 10 ? (
+                {inputValue.desc && inputValue.desc.length < 10 ? (
                   <span style={{ color: "orange" }}>
                     상품 설명을 10글자 이상 입력해주세요
                   </span>
@@ -294,7 +296,7 @@ function Post() {
           </InputList>
           <InputList name="수량">
             <label htmlFor="">
-              <input
+              <PostTextInput
                 type="text"
                 name="quantity"
                 value={inputValue.quantity}
