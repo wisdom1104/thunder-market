@@ -44,7 +44,6 @@ function Card() {
                 key={item.id}
                 onClick={() => {
                   navigate(`/products/${item.id}`);
-                  console.log(item.id);
                 }}
               >
                 <CardImg>

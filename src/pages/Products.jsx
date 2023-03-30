@@ -58,13 +58,8 @@ function Products() {
   const jsonPosts = JSON.stringify(posts);
   const jsonDibsNum = JSON.stringify(posts.dibsNum);
 
-  console.log(posts);
-
   const pdId = params.pdId;
   const done = posts?.done;
-
-  console.log("좋아요 여부", posts.dibs);
-  console.log("좋아요 개수", posts.dibsNum);
 
   useEffect(() => {
     dispatch(__getDetail(pdId));
